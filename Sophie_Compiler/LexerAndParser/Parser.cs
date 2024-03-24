@@ -49,20 +49,37 @@ public class Parser
         _errorDiagnostics.Add($"EEROR: Unexpected token <{Current.SyntaxKind}>, expected <{kind}>");
         return new SyntaxToken(kind, Current.Position, null, null);
     }
+
+    private ExpressionSyntax ParseExpression()
+    {
+        return ParseTerm();
+    }
     public SyntaxTree Parse()
     {
-        var expression= ParseExpression();
+        var expression= ParseTerm();
         var endOfFileToken = Match(SyntaxKind.EndOfFileToken);
         return new SyntaxTree(_errorDiagnostics, expression, endOfFileToken);
     }
-    public ExpressionSyntax ParseExpression()
+    public ExpressionSyntax ParseTerm()
+    {
+        var left = ParseFactor();
+        while (Current.SyntaxKind == SyntaxKind.PlusToken ||
+               Current.SyntaxKind == SyntaxKind.MinusToken
+               )
+        {
+            var operationToken = NextToken();
+            var right = ParseFactor();
+            left = new BinaryExpressionSyntax(left, operationToken, right);
+        }
+
+        return left;
+    }
+    public ExpressionSyntax ParseFactor()
     {
         var left = ParsePrimaryExpression();
-        while (Current.SyntaxKind == SyntaxKind.PlusToken ||
-               Current.SyntaxKind == SyntaxKind.MinusToken||
-               Current.SyntaxKind == SyntaxKind.StarToken||
+        while (Current.SyntaxKind == SyntaxKind.StarToken||
                Current.SyntaxKind == SyntaxKind.SlashToken
-               )
+              )
         {
             var operationToken = NextToken();
             var right = ParsePrimaryExpression();
@@ -73,6 +90,13 @@ public class Parser
     }
     private ExpressionSyntax ParsePrimaryExpression()
     {
+        if (Current.SyntaxKind == SyntaxKind.OpenParanthesisToken)
+        {
+            var left = NextToken();
+            var expression = ParseExpression();
+            var right = Match(SyntaxKind.CloseParanthesisToken);
+            return new ParaenthesizedExpressionSyntax(left, expression, right);
+        }
         var numberToken = Match(SyntaxKind.NumberToken);
         return new NumberExpressionSyntax(numberToken);
     }

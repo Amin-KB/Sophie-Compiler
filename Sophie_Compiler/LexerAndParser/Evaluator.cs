@@ -33,6 +33,9 @@ public class Evaluator
             else
                 throw new Exception($"Unexpected binary operator {b.OperatorToken.SyntaxKind}");
         }
+
+        if (node is ParaenthesizedExpressionSyntax p)
+            return EvalueteExpression(p.Expression);
         throw new Exception($"Unexpected Node {node.SyntaxKind}");
     }
 }

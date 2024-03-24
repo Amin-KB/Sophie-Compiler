@@ -10,8 +10,8 @@ static void Run()
         var line = Console.ReadLine();
         if (string.IsNullOrEmpty(line))
             return;
-        var parser = new Parser(line);
-        var syntaxTree = parser.Parse();
+        var syntaxTree = SyntaxTree.Parse(line);
+  
         var color = Console.ForegroundColor;
         Console.ForegroundColor = ConsoleColor.DarkGray;
        Print(syntaxTree.Root);
@@ -26,7 +26,7 @@ static void Run()
         else
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            foreach (var error in parser.ErrorDiagnostics) 
+            foreach (var error in syntaxTree.Diagnostics) 
                 Console.WriteLine(error);
             Console.ForegroundColor = color;
         }
