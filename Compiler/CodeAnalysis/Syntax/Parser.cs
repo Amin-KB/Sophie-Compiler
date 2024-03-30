@@ -1,11 +1,11 @@
-﻿namespace Sophie_Compiler.LexerAndParser;
+﻿namespace Compiler.CodeAnalysis.Syntax;
 
 internal sealed class Parser
 {
     private readonly SyntaxToken[] _tokens;
     private int _position;
-    private List<string> _errorDiagnostics = new List<string>();
-    public IEnumerable<string> ErrorDiagnostics => _errorDiagnostics;
+    private DiagnosticBag _errorDiagnostics = new DiagnosticBag();
+    public DiagnosticBag ErrorDiagnostics => _errorDiagnostics;
     public Parser(string text)
     {
         var tokens = new List<SyntaxToken>();
@@ -46,7 +46,7 @@ internal sealed class Parser
         if (Current.SyntaxKind == kind)
             return NextToken();
         
-        _errorDiagnostics.Add($"EEROR: Unexpected token <{Current.SyntaxKind}>, expected <{kind}>");
+        _errorDiagnostics.ReportUnexpectedToken(Current.Span,Current.SyntaxKind,kind);
         return new SyntaxToken(kind, Current.Position, null, null);
     }
 

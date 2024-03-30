@@ -1,4 +1,4 @@
-﻿namespace Sophie_Compiler.LexerAndParser;
+﻿namespace Compiler.CodeAnalysis.Syntax;
 
 internal sealed class Lexer
 {
@@ -23,8 +23,8 @@ internal sealed class Lexer
         
     }
     
-    private List<string> _errorDiagnostics = new List<string>();
-    public IEnumerable<string> ErrorDiagnostics => _errorDiagnostics;
+    private DiagnosticBag _errorDiagnostics = new DiagnosticBag();
+    public DiagnosticBag ErrorDiagnostics => _errorDiagnostics;
     private void Next()
     {
         _position++;
@@ -48,7 +48,7 @@ internal sealed class Lexer
             var length = _position - start;
             var text = _text.Substring(start, length);
             if (!int.TryParse(text, out var value))
-                _errorDiagnostics.Add($"ERROR: unable to parse '{text}' as number");
+                _errorDiagnostics.ReportInvalidNumber(new TextSpan(start,length),_text,typeof(int));
    
             return new SyntaxToken(SyntaxKind.NumberToken, start, text, value);
         }
@@ -106,11 +106,11 @@ internal sealed class Lexer
                     return new SyntaxToken(SyntaxKind.BangEqualToken, _position += 2, "!=", null);
                 else
                     return new SyntaxToken(SyntaxKind.BangToken, _position++, "!", null);
-                
                 break;
+            
         }
      
-        _errorDiagnostics.Add($"ERROR: bad character input '{Current}'");
+        _errorDiagnostics.ReportBadCharacter(_position,Current);
         return new SyntaxToken(SyntaxKind.BadToken, _position++, _text.Substring(_position - 1, 1), null);
     }
 }

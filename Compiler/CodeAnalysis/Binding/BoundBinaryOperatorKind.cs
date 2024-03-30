@@ -1,4 +1,4 @@
-﻿namespace Sophie_Compiler.LexerAndParser.Binding;
+﻿namespace Compiler.CodeAnalysis.Binding;
 
 public enum BoundBinaryOperatorKind
 {

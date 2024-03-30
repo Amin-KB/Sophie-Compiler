@@ -1,6 +1,6 @@
-﻿using Sophie_Compiler.LexerAndParser.Binding;
+﻿using Compiler.CodeAnalysis.Binding;
 
-namespace Sophie_Compiler.LexerAndParser;
+namespace Compiler.CodeAnalysis;
 
 internal sealed class Evaluator
 {

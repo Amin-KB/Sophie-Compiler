@@ -1,9 +1,11 @@
-﻿namespace Sophie_Compiler.LexerAndParser.Binding;
+﻿using Compiler.CodeAnalysis.Syntax;
+
+namespace Compiler.CodeAnalysis.Binding;
 
 internal sealed class Binder
 {
-    private readonly List<string> _diagnostics = new List<string>();
-    public IEnumerable<string> Diagnostics => _diagnostics;
+    private readonly DiagnosticBag _diagnostics = new DiagnosticBag();
+    public DiagnosticBag Diagnostics => _diagnostics;
 
     public BoundExpression BindExpression(ExpressionSyntax syntax)
     {
@@ -15,11 +17,13 @@ internal sealed class Binder
                 return BindUnaryExpression((UnaryExpressionSyntax)syntax);
             case SyntaxKind.BinaryExpression:
                 return BindBinaryExpression((BinaryExpressionSyntax)syntax);
+            case SyntaxKind.ParenthesizedExpression:
+                return BindExpression(((ParenthesizedExpressionSyntax)syntax).Expression);
             default:
                 throw new Exception($"Unexpected syntax {syntax.SyntaxKind}");
         }
     }
-
+ 
     private BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax)
     {
         var value = syntax.Value ?? 0;
@@ -32,8 +36,7 @@ internal sealed class Binder
         var boundOperator = BoundUnaryOperator.Bind(syntax.OperatorToken.SyntaxKind, boundOperand.Type);
         if (boundOperator == null)
         {
-            _diagnostics.Add(
-                $"Unary operator '{syntax.OperatorToken.Text}' is not defined for type {boundOperand.Type}");
+            _diagnostics.ReportUndefinedUnaryOperator(syntax.OperatorToken.Span,syntax.OperatorToken.Text,boundOperand.Type);
             return boundOperand;
         }
 
@@ -48,8 +51,7 @@ internal sealed class Binder
       BoundBinaryOperator.Bind(syntax.OperatorToken.SyntaxKind, boundLeft.Type, boundRight.Type);
         if (boundOperator == null)
         {
-            _diagnostics.Add(
-                $"Binary operator '{syntax.OperatorToken.Text}' is not defined for type {boundLeft.Type} and {boundRight.Type}");
+            _diagnostics.ReportUndefinedBinaryOperator(syntax.OperatorToken.Span,syntax.OperatorToken.Text,boundLeft.Type,boundRight.Type);
             return boundLeft;
         }
 

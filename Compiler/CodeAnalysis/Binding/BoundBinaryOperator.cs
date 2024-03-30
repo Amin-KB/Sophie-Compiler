@@ -1,4 +1,6 @@
-﻿namespace Sophie_Compiler.LexerAndParser.Binding;
+﻿using Compiler.CodeAnalysis.Syntax;
+
+namespace Compiler.CodeAnalysis.Binding;
 
 internal sealed class BoundBinaryOperator
 {

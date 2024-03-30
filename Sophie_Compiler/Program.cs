@@ -1,6 +1,8 @@
 ﻿using System.Runtime.InteropServices;
-using Sophie_Compiler.LexerAndParser;
-using Sophie_Compiler.LexerAndParser.Binding;
+using Compiler.CodeAnalysis.Syntax;
+using Compiler.CodeAnalysis.Binding;
+using Compiler.CodeAnalysis;
+
 
 Run();
 static void Run()
@@ -12,9 +14,9 @@ static void Run()
         if (string.IsNullOrEmpty(line))
             return;
         var syntaxTree = SyntaxTree.Parse(line);
-        var binder = new Binder();
-        var boundExpression = binder.BindExpression(syntaxTree.Root);
-        var _diagnostics = syntaxTree.Diagnostics.Concat(binder.Diagnostics).ToArray();
+        var compilation = new Compilation(syntaxTree);
+        var result = compilation.Evaluate();
+        var _diagnostics = result.Diagnostics;
         var color = Console.ForegroundColor;
         Console.ForegroundColor = ConsoleColor.DarkGray;
        Print(syntaxTree.Root);
@@ -22,9 +24,9 @@ static void Run()
         Console.ForegroundColor = color;
         if (!_diagnostics.Any())
         {
-            var e = new Evaluator(boundExpression);
-            var result = e.Evaluate();
-            Console.WriteLine(result); 
+        
+           
+            Console.WriteLine(result.Value); 
         }
         else
         {

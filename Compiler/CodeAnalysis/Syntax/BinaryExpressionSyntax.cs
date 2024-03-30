@@ -1,4 +1,4 @@
-﻿namespace Sophie_Compiler.LexerAndParser;
+﻿namespace Compiler.CodeAnalysis.Syntax;
 
 public sealed class BinaryExpressionSyntax:ExpressionSyntax
 {

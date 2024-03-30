@@ -1,12 +1,11 @@
-﻿namespace Sophie_Compiler.LexerAndParser;
-
+﻿namespace Compiler.CodeAnalysis.Syntax;
 public sealed class SyntaxTree
 {
     public ExpressionSyntax Root { get; }
     public SyntaxToken EndOfFileToken { get; }
-    public IReadOnlyList<string> Diagnostics { get; }
+    public IReadOnlyList<Diagnostic> Diagnostics { get; }
 
-    public SyntaxTree(IEnumerable<string> diagnostics, ExpressionSyntax root, SyntaxToken endOfFileToken)
+    public SyntaxTree(IEnumerable<Diagnostic> diagnostics, ExpressionSyntax root, SyntaxToken endOfFileToken)
     {
         Root = root;
         EndOfFileToken = endOfFileToken;
