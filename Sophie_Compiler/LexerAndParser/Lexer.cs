@@ -11,16 +11,17 @@ internal sealed class Lexer
         _text = text;
     }
 
-    private char Current
+    private char Current => Peek(0);
+    private char LookAhead => Peek(1);
+  
+    private char Peek(int offset)
     {
-        get
-        {
-            if (_position >= _text.Length)
+        var index = _position + offset;
+            if (index >= _text.Length)
                 return '\0';
-            return _text[_position];
-        }
+            return _text[index];
+        
     }
-
     
     private List<string> _errorDiagnostics = new List<string>();
     public IEnumerable<string> ErrorDiagnostics => _errorDiagnostics;
@@ -63,6 +64,16 @@ internal sealed class Lexer
             return new SyntaxToken(SyntaxKind.WhiteSpaceToken, start, text, null);
         }
 
+        if (char.IsLetter(Current))
+        {
+            var start = _position;
+            while (char.IsLetter(Current))
+           Next();
+            var length = _position - start;
+            var text = _text.Substring(start, length);
+            var kind = SyntaxFact.GetKeywordKind(text);
+            return new SyntaxToken(kind, start, text, null);
+        }
         switch (Current)
         {
             case('+'):
@@ -77,6 +88,16 @@ internal sealed class Lexer
                 return new SyntaxToken(SyntaxKind.OpenParenthesisToken, _position++, "(", null);
             case(')'):
                 return new SyntaxToken(SyntaxKind.CloseParenthesisToken, _position++, ")", null);
+            case('!'):
+                return new SyntaxToken(SyntaxKind.BangToken, _position++, "!", null);
+            case('&'):
+                if (LookAhead == '&')
+                    return new SyntaxToken(SyntaxKind.AmpersandAmperSandToken, _position += 2, "&&", null);
+                break;
+            case('|'):
+                if (LookAhead == '|')
+                    return new SyntaxToken(SyntaxKind.PipePipeToken, _position += 2, "||", null);
+                break;
         }
      
         _errorDiagnostics.Add($"ERROR: bad character input '{Current}'");

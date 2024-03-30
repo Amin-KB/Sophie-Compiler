@@ -95,6 +95,12 @@ internal sealed class Parser
             var expression = ParseExpression();
             var right = MatchToken(SyntaxKind.CloseParenthesisToken);
             return new ParenthesizedExpressionSyntax(left, expression, right);
+        }else if (Current.SyntaxKind == SyntaxKind.TrueKeyword ||
+                  Current.SyntaxKind == SyntaxKind.FalseKeyword)
+        {
+            var keywordToken = NextToken();
+            var value = keywordToken.SyntaxKind == SyntaxKind.TrueKeyword;
+            return new LiteralExpressionSyntax(keywordToken, value);
         }
         var numberToken = MatchToken(SyntaxKind.NumberToken);
         return new LiteralExpressionSyntax(numberToken);

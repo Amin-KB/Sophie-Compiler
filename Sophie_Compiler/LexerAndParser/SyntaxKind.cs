@@ -18,5 +18,11 @@ public enum SyntaxKind
     LiteralExpression,
     BinaryExpression,
     ParenthesizedExpression,
-    UnaryExpression
+    UnaryExpression,
+    TrueKeyword,
+    FalseKeyword,
+    IdentifierToken,
+    BangToken,
+    AmpersandAmperSandToken,
+    PipePipeToken
 }

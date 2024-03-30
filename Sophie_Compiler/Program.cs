@@ -20,16 +20,16 @@ static void Run()
        Print(syntaxTree.Root);
         
         Console.ForegroundColor = color;
-        if (!syntaxTree.Diagnostics.Any())
+        if (!_diagnostics.Any())
         {
             var e = new Evaluator(boundExpression);
-            var result = e.Evaluete();
+            var result = e.Evaluate();
             Console.WriteLine(result); 
         }
         else
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            foreach (var error in syntaxTree.Diagnostics) 
+            foreach (var error in _diagnostics) 
                 Console.WriteLine(error);
             Console.ResetColor(); 
         }
