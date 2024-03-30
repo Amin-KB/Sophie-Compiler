@@ -24,5 +24,8 @@ public enum SyntaxKind
     IdentifierToken,
     BangToken,
     AmpersandAmperSandToken,
-    PipePipeToken
+    PipePipeToken,
+    EqualEqualToken,
+   
+    BangEqualToken
 }

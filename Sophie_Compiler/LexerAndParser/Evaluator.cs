@@ -26,21 +26,21 @@ internal sealed class Evaluator
         if (node is BoundUnaryExpression u)
         {
             var operand = EvalueteExpression(u.Operand);
-            if (u.OperatorKind== BoundUnaryOperatorKind.Identity)
+            if (u.Op.Kind== BoundUnaryOperatorKind.Identity)
                 return (int)operand;
-            else if (u.OperatorKind == BoundUnaryOperatorKind.Negation)
+            else if (u.Op.Kind == BoundUnaryOperatorKind.Negation)
                 return -(int)operand;
-            else if (u.OperatorKind == BoundUnaryOperatorKind.LogicalNegation)
+            else if (u.Op.Kind == BoundUnaryOperatorKind.LogicalNegation)
                 return !(bool)operand;
             else
-                throw new Exception($"Unexpected binary operator {u.OperatorKind}");
+                throw new Exception($"Unexpected binary operator {u.Op.Kind}");
         }
 
         if (node is BoundBinaryExpression b)
         {
             var left = EvalueteExpression(b.Left);
             var right = EvalueteExpression(b.Right);
-            switch (b.OperatorKind)
+            switch (b.Op.Kind)
             {
                 case BoundBinaryOperatorKind.Addition:
                     return (int)left + (int)right;
@@ -54,8 +54,12 @@ internal sealed class Evaluator
                     return (bool)left && (bool)right;
                 case BoundBinaryOperatorKind.LogicalOr:
                     return (bool)left || (bool)right;
+                case BoundBinaryOperatorKind.Equals:
+                    return Equals(left,right);
+                case BoundBinaryOperatorKind.NotEquals:
+                    return !Equals(left,right);
                 default:
-                    throw new Exception($"Unexpected binary operator {b.OperatorKind}");
+                    throw new Exception($"Unexpected binary operator {b.Op.Kind}");
             }
          
         }

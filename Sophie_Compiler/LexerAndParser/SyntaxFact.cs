@@ -10,7 +10,7 @@ internal static class SyntaxFact
             case SyntaxKind.PlusToken:
             case SyntaxKind.MinusToken:
             case SyntaxKind.BangToken:
-                return 5;
+                return 6;
             default:
                 return 0;
           
@@ -22,9 +22,12 @@ internal static class SyntaxFact
         {
             case SyntaxKind.StarToken:
             case SyntaxKind.SlashToken:
-                return 4;
+                return 5;
             case SyntaxKind.PlusToken:
             case SyntaxKind.MinusToken:
+                return 4;
+            case SyntaxKind.EqualEqualToken:
+            case SyntaxKind.BangEqualToken:
                 return 3;
             case SyntaxKind.AmpersandAmperSandToken:
                 return 2;

@@ -1,16 +1,16 @@
 ﻿namespace Sophie_Compiler.LexerAndParser.Binding;
 
-public class BoundBinaryExpression:BoundExpression
+internal sealed class BoundBinaryExpression:BoundExpression
 {
-    public override Type Type => Right.Type;
+    public override Type Type => Op.ResultType;
     public override BoundNodeKind Kind => BoundNodeKind.UnaryExpression;
-    public BoundBinaryOperatorKind OperatorKind { get; }
+    public BoundBinaryOperator Op { get; }
     public BoundExpression Right { get; }
     public BoundExpression Left { get; }
 
-    public BoundBinaryExpression(BoundExpression left,BoundBinaryOperatorKind operatorKind,BoundExpression right)
+    public BoundBinaryExpression(BoundExpression left,BoundBinaryOperator op,BoundExpression right)
     {
-        OperatorKind = operatorKind;
+        Op = op;
         Right = right;
         Left = left;
     }
