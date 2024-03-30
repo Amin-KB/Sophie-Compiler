@@ -1,6 +1,6 @@
 ﻿namespace Sophie_Compiler.LexerAndParser;
 
-public class SyntaxTree
+public sealed class SyntaxTree
 {
     public ExpressionSyntax Root { get; }
     public SyntaxToken EndOfFileToken { get; }

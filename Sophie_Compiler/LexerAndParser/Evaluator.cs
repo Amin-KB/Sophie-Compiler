@@ -1,9 +1,12 @@
-﻿namespace Sophie_Compiler.LexerAndParser;
+﻿using Sophie_Compiler.LexerAndParser.Binding;
 
-public class Evaluator
+namespace Sophie_Compiler.LexerAndParser;
+
+internal sealed class Evaluator
 {
-    private readonly ExpressionSyntax _root;
-    public Evaluator(ExpressionSyntax root)
+    private readonly BoundExpression _root;
+
+    public Evaluator(BoundExpression root)
     {
         _root = root;
     }
@@ -12,30 +15,46 @@ public class Evaluator
     {
         return EvalueteExpression(_root);
     }
-    public int EvalueteExpression(ExpressionSyntax node)
+
+    public int EvalueteExpression(BoundExpression node)
     {
-        if (node is NumberExpressionSyntax n)
+        if (node is BoundLiteralExpression n)
         {
-            return (int)n.NumberToken.Value;
+            return (int)n.Value;
         }
-        if (node is BinaryExpressionSyntax b)
+
+        if (node is BoundUnaryExpression u)
+        {
+            var operand = EvalueteExpression(u.Operand);
+            if (u.OperatorKind== BoundUnaryOperatorKind.Identity)
+                return operand;
+            else if (u.OperatorKind == BoundUnaryOperatorKind.Negation)
+                return -operand;
+            else
+                throw new Exception($"Unexpected binary operator {u.OperatorKind}");
+        }
+
+        if (node is BoundBinaryExpression b)
         {
             var left = EvalueteExpression(b.Left);
             var right = EvalueteExpression(b.Right);
-            if (b.OperatorToken.SyntaxKind == SyntaxKind.PlusToken)
-                return left + right;
-            else if (b.OperatorToken.SyntaxKind == SyntaxKind.MinusToken)
-                return left- right;
-            else if (b.OperatorToken.SyntaxKind == SyntaxKind.StarToken)
-                return left * right;
-            else if (b.OperatorToken.SyntaxKind == SyntaxKind.SlashToken)
-                return left / right;
-            else
-                throw new Exception($"Unexpected binary operator {b.OperatorToken.SyntaxKind}");
+            switch (b.OperatorKind)
+            {
+                case BoundBinaryOperatorKind.Addition:
+                    return left + right;
+                case BoundBinaryOperatorKind.Substraction:
+                    return left - right;
+                case BoundBinaryOperatorKind.Multiplication:
+                    return left * right;
+                case BoundBinaryOperatorKind.Division:
+                    return left / right;
+                default:
+                    throw new Exception($"Unexpected binary operator {b.OperatorKind}");
+            }
+         
         }
 
-        if (node is ParaenthesizedExpressionSyntax p)
-            return EvalueteExpression(p.Expression);
-        throw new Exception($"Unexpected Node {node.SyntaxKind}");
+     
+        throw new Exception($"Unexpected Node {node.Kind}");
     }
 }

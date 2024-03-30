@@ -1,6 +1,6 @@
 ﻿namespace Sophie_Compiler.LexerAndParser;
 
-public class SyntaxToken:SyntaxNode
+public sealed class SyntaxToken:SyntaxNode
 {
     public override SyntaxKind SyntaxKind { get;  }
     public override IEnumerable<SyntaxNode> GetChildren()

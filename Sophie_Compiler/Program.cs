@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using Sophie_Compiler.LexerAndParser;
+using Sophie_Compiler.LexerAndParser.Binding;
 
 Run();
 static void Run()
@@ -11,7 +12,9 @@ static void Run()
         if (string.IsNullOrEmpty(line))
             return;
         var syntaxTree = SyntaxTree.Parse(line);
-  
+        var binder = new Binder();
+        var boundExpression = binder.BindExpression(syntaxTree.Root);
+        var _diagnostics = syntaxTree.Diagnostics.Concat(binder.Diagnostics).ToArray();
         var color = Console.ForegroundColor;
         Console.ForegroundColor = ConsoleColor.DarkGray;
        Print(syntaxTree.Root);
@@ -19,7 +22,7 @@ static void Run()
         Console.ForegroundColor = color;
         if (!syntaxTree.Diagnostics.Any())
         {
-            var e = new Evaluator(syntaxTree.Root);
+            var e = new Evaluator(boundExpression);
             var result = e.Evaluete();
             Console.WriteLine(result); 
         }
@@ -28,7 +31,7 @@ static void Run()
             Console.ForegroundColor = ConsoleColor.Red;
             foreach (var error in syntaxTree.Diagnostics) 
                 Console.WriteLine(error);
-            Console.ForegroundColor = color;
+            Console.ResetColor(); 
         }
        
     }
@@ -47,7 +50,7 @@ static void Print(SyntaxNode node, string indent = "",bool isLast=false)
     }
 
     Console.WriteLine();
-    indent += isLast ? "    " : "\u2502   ";
+    indent += isLast ? "   " : "\u2502  ";
     var lastChild = node.GetChildren().LastOrDefault();
     foreach (var child in node.GetChildren())
     {
