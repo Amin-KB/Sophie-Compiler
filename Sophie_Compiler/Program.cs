@@ -30,9 +30,26 @@ static void Run()
         }
         else
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            foreach (var error in _diagnostics) 
-                Console.WriteLine(error);
+            
+            foreach (var diagnostic in _diagnostics)
+            {
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(diagnostic);
+                Console.ResetColor();
+                var prefix = line.Substring(0, diagnostic.TextSpan.Start);
+                var error = line.Substring(diagnostic.TextSpan.Start,diagnostic.TextSpan.Length);
+                var suffix = line.Substring(diagnostic.TextSpan.End);
+
+                Console.Write("    ");
+                Console.Write(prefix);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write(error);
+                Console.ResetColor();
+                Console.WriteLine(suffix);
+                
+            }
+            
             Console.ResetColor(); 
         }
        

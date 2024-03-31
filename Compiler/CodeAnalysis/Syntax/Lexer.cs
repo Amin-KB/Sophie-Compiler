@@ -39,9 +39,10 @@ internal sealed class Lexer
         if (_position >= _text.Length)
             return new SyntaxToken(SyntaxKind.EndOfFileToken, _position, "\0", null);
 
+        var start = _position;
         if (char.IsDigit(Current))
         {
-            var start = _position;
+       
 
             while (char.IsDigit(Current))
                 Next();
@@ -55,7 +56,7 @@ internal sealed class Lexer
 
         if (char.IsWhiteSpace(Current))
         {
-            var start = _position;
+         
 
             while (char.IsWhiteSpace(Current))
                 Next();
@@ -66,7 +67,7 @@ internal sealed class Lexer
 
         if (char.IsLetter(Current))
         {
-            var start = _position;
+        
             while (char.IsLetter(Current))
            Next();
             var length = _position - start;
@@ -91,19 +92,32 @@ internal sealed class Lexer
         
             case('&'):
                 if (LookAhead == '&')
-                    return new SyntaxToken(SyntaxKind.AmpersandAmperSandToken, _position += 2, "&&", null);
+                {
+                    _position += 2;
+                    return new SyntaxToken(SyntaxKind.AmpersandAmperSandToken, start, "&&", null);
+                }
                 break;
             case('|'):
                 if (LookAhead == '|')
-                    return new SyntaxToken(SyntaxKind.PipePipeToken, _position += 2, "||", null);
+                {
+                    _position += 2;
+                    return new SyntaxToken(SyntaxKind.PipePipeToken, start, "||", null);
+                }
                 break;
             case('='):
                 if (LookAhead == '=')
-                    return new SyntaxToken(SyntaxKind.EqualEqualToken, _position += 2, "==", null);
+                {
+                    _position += 2;
+                    return new SyntaxToken(SyntaxKind.EqualEqualToken, start, "==", null);
+                }
                 break;
             case('!'):
                 if (LookAhead == '=')
-                    return new SyntaxToken(SyntaxKind.BangEqualToken, _position += 2, "!=", null);
+                {
+                    _position += 2;
+                    return new SyntaxToken(SyntaxKind.BangEqualToken, start, "!=", null);
+                }
+                
                 else
                     return new SyntaxToken(SyntaxKind.BangToken, _position++, "!", null);
                 break;
