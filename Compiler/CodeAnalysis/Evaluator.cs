@@ -5,10 +5,12 @@ namespace Compiler.CodeAnalysis;
 internal sealed class Evaluator
 {
     private readonly BoundExpression _root;
+    private readonly Dictionary<string, object> _variables;
 
-    public Evaluator(BoundExpression root)
+    public Evaluator(BoundExpression root, Dictionary<string, object> variables)
     {
         _root = root;
+        _variables = variables;
     }
 
     public object Evaluate()
@@ -23,10 +25,19 @@ internal sealed class Evaluator
             return n.Value;
         }
 
+        if (node is BoundVariableExpression v)
+            return _variables[v.Name];
+        if (node is BoundAssignmentExpression a)
+        {
+            var value = EvalueteExpression(a.Expression);
+            _variables[a.Name] = value;
+            return value;
+        }
+
         if (node is BoundUnaryExpression u)
         {
             var operand = EvalueteExpression(u.Operand);
-            if (u.Op.Kind== BoundUnaryOperatorKind.Identity)
+            if (u.Op.Kind == BoundUnaryOperatorKind.Identity)
                 return (int)operand;
             else if (u.Op.Kind == BoundUnaryOperatorKind.Negation)
                 return -(int)operand;
@@ -45,7 +56,7 @@ internal sealed class Evaluator
                 case BoundBinaryOperatorKind.Addition:
                     return (int)left + (int)right;
                 case BoundBinaryOperatorKind.Substraction:
-                    return (int)left -(int) right;
+                    return (int)left - (int)right;
                 case BoundBinaryOperatorKind.Multiplication:
                     return (int)left * (int)right;
                 case BoundBinaryOperatorKind.Division:
@@ -55,16 +66,15 @@ internal sealed class Evaluator
                 case BoundBinaryOperatorKind.LogicalOr:
                     return (bool)left || (bool)right;
                 case BoundBinaryOperatorKind.Equals:
-                    return Equals(left,right);
+                    return Equals(left, right);
                 case BoundBinaryOperatorKind.NotEquals:
-                    return !Equals(left,right);
+                    return !Equals(left, right);
                 default:
                     throw new Exception($"Unexpected binary operator {b.Op.Kind}");
             }
-         
         }
 
-     
+
         throw new Exception($"Unexpected Node {node.Kind}");
     }
 }

@@ -27,5 +27,8 @@ public enum SyntaxKind
     PipePipeToken,
     EqualEqualToken,
    
-    BangEqualToken
+    BangEqualToken,
+    NameExpression,
+    AssignmentToken,
+    EqualToken
 }

@@ -57,4 +57,11 @@ internal sealed class DiagnosticBag : IEnumerable<Diagnostic>
             $"Binary operator '{span}' is not defined for type {boundLeftType} and {boundRightType}";
         Report(span,message);
     }
+
+    public void ReportUndefinedName(TextSpan span, string name)
+    {
+        var message =
+            $"Variable name '{name}' does not exists ";
+        Report(span,message);
+    }
 }

@@ -7,6 +7,7 @@ using Compiler.CodeAnalysis;
 Run();
 static void Run()
 {
+    var variables = new Dictionary<string, object>();
     while (true)
     {
         Console.Write("> ");
@@ -15,7 +16,7 @@ static void Run()
             return;
         var syntaxTree = SyntaxTree.Parse(line);
         var compilation = new Compilation(syntaxTree);
-        var result = compilation.Evaluate();
+        var result = compilation.Evaluate(variables);
         var _diagnostics = result.Diagnostics;
         var color = Console.ForegroundColor;
         Console.ForegroundColor = ConsoleColor.DarkGray;
