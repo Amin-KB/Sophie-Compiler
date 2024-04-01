@@ -8,7 +8,7 @@ internal sealed class Binder
     private readonly DiagnosticBag _diagnostics = new DiagnosticBag();
     public DiagnosticBag Diagnostics => _diagnostics;
 
-    public Binder(Dictionary<VariableSymbol,object>variables)
+    public Binder(Dictionary<VariableSymbol, object> variables)
     {
         _variables = variables;
     }
@@ -19,11 +19,10 @@ internal sealed class Binder
     {
         switch (syntax.SyntaxKind)
         {
-            case SyntaxKind.LiteralExpression:
-                return BindLiteralExpression((LiteralExpressionSyntax)syntax);
-  
             case SyntaxKind.ParenthesizedExpression:
                 return BindParenthesizedExpression((ParenthesizedExpressionSyntax)syntax);
+            case SyntaxKind.LiteralExpression:
+                return BindLiteralExpression((LiteralExpressionSyntax)syntax);
             case SyntaxKind.NameExpression:
                 return BindNameExpression((NameExpressionSyntax)syntax);
             case SyntaxKind.AssignmentToken:
@@ -46,12 +45,12 @@ internal sealed class Binder
     {
         var name = syntax.IdentifierToken.Text;
         var variable = _variables.Keys.FirstOrDefault(v => v.Name == name);
-        if (variable==null)
+        if (variable == null)
         {
-            _diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span,name);
+            _diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
         }
 
-        
+
         return new BoundVariableExpression(variable);
     }
 
@@ -67,14 +66,13 @@ internal sealed class Binder
 
         var variable = new VariableSymbol(name, boundExpression.Type);
         _variables[variable] = null;
- 
-            
-        return new BoundAssignmentExpression(variable,boundExpression);
+
+
+        return new BoundAssignmentExpression(variable, boundExpression);
     }
 
     private BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax)
     {
-      
         var value = syntax.Value ?? 0;
         return new BoundLiteralExpression(value);
     }
@@ -85,7 +83,8 @@ internal sealed class Binder
         var boundOperator = BoundUnaryOperator.Bind(syntax.OperatorToken.SyntaxKind, boundOperand.Type);
         if (boundOperator == null)
         {
-            _diagnostics.ReportUndefinedUnaryOperator(syntax.OperatorToken.Span,syntax.OperatorToken.Text,boundOperand.Type);
+            _diagnostics.ReportUndefinedUnaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text,
+                boundOperand.Type);
             return boundOperand;
         }
 
@@ -97,17 +96,14 @@ internal sealed class Binder
         var boundLeft = BindExpression(syntax.Left);
         var boundRight = BindExpression(syntax.Right);
         var boundOperator =
-      BoundBinaryOperator.Bind(syntax.OperatorToken.SyntaxKind, boundLeft.Type, boundRight.Type);
+            BoundBinaryOperator.Bind(syntax.OperatorToken.SyntaxKind, boundLeft.Type, boundRight.Type);
         if (boundOperator == null)
         {
-            _diagnostics.ReportUndefinedBinaryOperator(syntax.OperatorToken.Span,syntax.OperatorToken.Text,boundLeft.Type,boundRight.Type);
+            _diagnostics.ReportUndefinedBinaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text,
+                boundLeft.Type, boundRight.Type);
             return boundLeft;
         }
 
         return new BoundBinaryExpression(boundLeft, boundOperator, boundRight);
     }
-
-
-
-  
 }

@@ -1,4 +1,5 @@
 ﻿namespace Compiler.CodeAnalysis.Syntax;
+
 public sealed class SyntaxTree
 {
     public ExpressionSyntax Root { get; }
@@ -16,5 +17,18 @@ public sealed class SyntaxTree
     {
         var parser = new Parser(text);
         return parser.Parse();
+    }
+
+    public static IEnumerable<SyntaxToken> ParseToken(string text)
+    {
+        var lexer = new Lexer(text);
+        while (true)
+        {
+            var token = lexer.Lex();
+            if (token.SyntaxKind == SyntaxKind.EndOfFileToken)
+                break;
+
+            yield return token;
+        }
     }
 }

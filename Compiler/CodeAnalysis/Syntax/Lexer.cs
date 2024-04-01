@@ -34,7 +34,7 @@ internal sealed class Lexer
     /// Retrieves the next token from the input stream.
     /// </summary>
     /// <returns>A <see cref="SyntaxToken"/> representing the next token in the input stream.</returns>
-    public SyntaxToken NextToken()
+    public SyntaxToken Lex()
     {
         if (_position >= _text.Length)
             return new SyntaxToken(SyntaxKind.EndOfFileToken, _position, "\0", null);
@@ -84,7 +84,7 @@ internal sealed class Lexer
             case('*'):
                 return new SyntaxToken(SyntaxKind.StarToken, _position++, "*", null);
             case('/'):
-                return new SyntaxToken(SyntaxKind.PlusToken, _position++, "/", null);
+                return new SyntaxToken(SyntaxKind.SlashToken, _position++, "/", null);
             case('('):
                 return new SyntaxToken(SyntaxKind.OpenParenthesisToken, _position++, "(", null);
             case(')'):
