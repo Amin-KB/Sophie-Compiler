@@ -17,7 +17,7 @@ public class SyntaxFactTest
         Assert.Equal(kind,token.SyntaxKind);
         Assert.Equal(text,token.Text);
     }
-
+   
     public static IEnumerable<object[]> GetSyntaxKindData()
     {
         var values = (SyntaxKind[])Enum.GetValues((typeof(SyntaxKind)));
