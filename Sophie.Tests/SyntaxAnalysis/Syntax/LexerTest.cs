@@ -31,9 +31,29 @@ public class LexerTest
         Assert.Equal(tokens[1].Text, bText);
     }
 
+    [Theory]
+    [MemberData(nameof(GetPairsTokenWithSeparatorData))]
+    public void Lexer_Lex_PairsTokenWithSeparators(SyntaxKind aKind, string aText,
+        SyntaxKind separatorKind, string separatorText,
+        SyntaxKind bKind, string bText)
+    {
+        var text = aText + separatorText + bText;
+        var tokens = SyntaxTree.ParseToken(text).ToArray();
+
+        Assert.Equal(3, tokens.Length);
+        Assert.Equal(tokens[0].SyntaxKind, aKind);
+        Assert.Equal(tokens[0].Text, aText);
+        Assert.Equal(tokens[1].SyntaxKind, separatorKind);
+        Assert.Equal(tokens[1].Text, separatorText);
+        Assert.Equal(tokens[2].SyntaxKind, bKind);
+        Assert.Equal(tokens[2].Text, bText);
+
+   
+    }
+
     public static IEnumerable<object[]> GetTokenData()
     {
-        foreach (var token in GetTokens())
+        foreach (var token in GetTokens().Concat(GetSeparators()))
             yield return new object[] { token.kind, token.text };
     }
 
@@ -41,6 +61,29 @@ public class LexerTest
     {
         foreach (var token in GetPairsTokens())
             yield return new object[] { token.aKind, token.aText, token.bKind, token.bText };
+    }
+
+    public static IEnumerable<object[]> GetPairsTokenWithSeparatorData()
+    {
+        foreach (var token in GetPairsWithSeparatorsTokens())
+            yield return new object[]
+            {
+                token.aKind, token.aText,
+                token.seperatorKind, token.separatorText,
+                token.bKind, token.bText
+            };
+    }
+
+    public static IEnumerable<(SyntaxKind kind, string text)> GetSeparators()
+    {
+        return new[]
+        {
+            (SyntaxKind.WhiteSpaceToken, " "),
+            (SyntaxKind.WhiteSpaceToken, "   "),
+            (SyntaxKind.WhiteSpaceToken, "\r"),
+            (SyntaxKind.WhiteSpaceToken, "\n"),
+            (SyntaxKind.WhiteSpaceToken, "\r\n"),
+        };
     }
 
     private static bool RequiresSeparator(SyntaxKind aKind, SyntaxKind bKind)
@@ -66,7 +109,7 @@ public class LexerTest
             return true;
         if (aKind == SyntaxKind.EqualToken && bKind == SyntaxKind.EqualEqualToken)
             return true;
-      
+
         return false;
     }
 
@@ -74,12 +117,6 @@ public class LexerTest
     {
         return new[]
         {
-            // (SyntaxKind.WhiteSpaceToken, " "),
-            // (SyntaxKind.WhiteSpaceToken, "   "),
-            // (SyntaxKind.WhiteSpaceToken, "\r"),
-            // (SyntaxKind.WhiteSpaceToken, "\n"),
-            // (SyntaxKind.WhiteSpaceToken, "\r\n"),
-
             (SyntaxKind.NumberToken, "123"),
             (SyntaxKind.NumberToken, "1"),
 
@@ -109,14 +146,28 @@ public class LexerTest
     {
         foreach (var a in GetTokens())
         {
-         
-                foreach (var b in GetTokens())
+            foreach (var b in GetTokens())
+            {
+                if (!RequiresSeparator(a.kind, b.kind))
+                    yield return (a.kind, a.text, b.kind, b.text);
+            }
+        }
+    }
+
+    public static IEnumerable<(SyntaxKind aKind, string aText,
+        SyntaxKind seperatorKind, string separatorText,
+        SyntaxKind bKind, string bText)> GetPairsWithSeparatorsTokens()
+    {
+        foreach (var a in GetTokens())
+        {
+            foreach (var b in GetTokens())
+            {
+                if (!RequiresSeparator(a.kind, b.kind))
                 {
-                    if (!RequiresSeparator(a.kind, b.kind))
-                        yield return (a.kind, a.text, b.kind, b.text);
-                }    
-        
-            
+                    foreach (var s in GetSeparators())
+                        yield return (a.kind, a.text, s.kind, s.text, b.kind, b.text);
+                }
+            }
         }
     }
 }

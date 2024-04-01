@@ -1,6 +1,6 @@
 ﻿namespace Compiler.CodeAnalysis.Syntax;
 
-internal static class SyntaxFact
+public static class SyntaxFact
 {
     public static int GetUnaryOperatorPrecedence(this SyntaxKind kind)
     {
@@ -49,6 +49,44 @@ internal static class SyntaxFact
                 return SyntaxKind.FalseKeyword;
             default:
                 return SyntaxKind.IdentifierToken;
+        }
+    }
+
+    public static string GetText(SyntaxKind kind)
+    {
+        switch (kind)
+        {
+            case SyntaxKind.PlusToken:
+                return "+";
+            case SyntaxKind.MinusToken:
+                return "-";
+            case SyntaxKind.StarToken:
+                return "*";
+            case SyntaxKind.SlashToken:
+                return "/";
+            case SyntaxKind.OpenParenthesisToken:
+                return "(";
+            case SyntaxKind.CloseParenthesisToken:
+                return ")";
+            case SyntaxKind.TrueKeyword:
+                return "true";
+            case SyntaxKind.FalseKeyword:
+                return "false";
+            case SyntaxKind.BangToken:
+                return "!";
+            case SyntaxKind.AmpersandAmperSandToken:
+                return "&&";
+            case SyntaxKind.PipePipeToken:
+                return "||";
+            case SyntaxKind.EqualEqualToken:
+                return "==";
+            case SyntaxKind.BangEqualToken:
+                return "!=";
+            case SyntaxKind.EqualToken:
+                return "=";
+            default:
+                return null;
+            
         }
     }
 }
