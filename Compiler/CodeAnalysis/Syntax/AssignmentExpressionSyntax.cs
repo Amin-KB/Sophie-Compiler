@@ -16,7 +16,7 @@ public class AssignmentExpressionSyntax : ExpressionSyntax
 
     public SyntaxToken IdentifierToken { get; }
 
-    public override SyntaxKind SyntaxKind => SyntaxKind.AssignmentToken;
+    public override SyntaxKind SyntaxKind => SyntaxKind.AssignmentEsxpression;
 
     public override IEnumerable<SyntaxNode> GetChildren()
 

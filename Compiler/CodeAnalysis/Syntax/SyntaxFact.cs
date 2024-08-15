@@ -89,6 +89,16 @@ public static class SyntaxFact
             
         }
     }
+    public static IEnumerable<SyntaxKind> GetUnaryOperators()
+    {
+        var kinds = (SyntaxKind[])Enum.GetValues(typeof(SyntaxKind));
+
+        foreach (var kind in kinds)
+        {
+            if(GetUnaryOperatorPrecedence(kind)>0)
+                yield return kind;
+        }
+    }
 
     public static IEnumerable<SyntaxKind> GetBinaryOperators()
     {

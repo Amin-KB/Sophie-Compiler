@@ -25,7 +25,7 @@ internal sealed class Binder
                 return BindLiteralExpression((LiteralExpressionSyntax)syntax);
             case SyntaxKind.NameExpression:
                 return BindNameExpression((NameExpressionSyntax)syntax);
-            case SyntaxKind.AssignmentToken:
+            case SyntaxKind.AssignmentEsxpression:
                 return BindAssignmentExpression((AssignmentExpressionSyntax)syntax);
             case SyntaxKind.UnaryExpression:
                 return BindUnaryExpression((UnaryExpressionSyntax)syntax);

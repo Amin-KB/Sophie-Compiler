@@ -29,6 +29,6 @@ public enum SyntaxKind
    
     BangEqualToken,
     NameExpression,
-    AssignmentToken,
+    AssignmentEsxpression,
     EqualToken
 }

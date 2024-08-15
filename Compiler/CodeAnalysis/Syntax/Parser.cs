@@ -6,7 +6,7 @@ internal sealed class Parser
 {
     private readonly SyntaxToken[] _tokens;
     private int _position;
-    private DiagnosticBag _errorDiagnostics = new DiagnosticBag();
+    private readonly DiagnosticBag _errorDiagnostics = new DiagnosticBag();
     public DiagnosticBag ErrorDiagnostics => _errorDiagnostics;
 
     public Parser(string text)
@@ -112,27 +112,49 @@ internal sealed class Parser
 
     private ExpressionSyntax ParsePrimaryExpression()
     {
-        if (Current.SyntaxKind == SyntaxKind.OpenParenthesisToken)
+        switch (Current.SyntaxKind)
         {
-            var left = NextToken();
-            var expression = ParseExpression();
-            var right = MatchToken(SyntaxKind.CloseParenthesisToken);
-            return new ParenthesizedExpressionSyntax(left, expression, right);
-        }
-        else if (Current.SyntaxKind == SyntaxKind.TrueKeyword ||
-                 Current.SyntaxKind == SyntaxKind.FalseKeyword)
-        {
-            var keywordToken = NextToken();
-            var value = keywordToken.SyntaxKind == SyntaxKind.TrueKeyword;
-            return new LiteralExpressionSyntax(keywordToken, value);
-        }
-        else if (Current.SyntaxKind == SyntaxKind.IdentifierToken)
-        {
-            var identifierToken = NextToken();
-            return new NameExpressionSyntax(identifierToken);
-        }
+            case SyntaxKind.OpenParenthesisToken:
+                return ParseParenthesizedExpression();
+            case SyntaxKind.TrueKeyword:
+            case SyntaxKind.FalseKeyword:
+                return ParseBooleanLiteral();
+            case SyntaxKind.NumberToken:
+                return ParseNumberExpression();
+            case SyntaxKind.IdentifierToken:
+            default:
+                return ParseNameToken();
 
+
+
+
+        }
+    }
+
+    private ExpressionSyntax ParseNumberExpression()
+    {
         var numberToken = MatchToken(SyntaxKind.NumberToken);
         return new LiteralExpressionSyntax(numberToken);
+    }
+
+    private ExpressionSyntax ParseParenthesizedExpression()
+    {
+        var left = MatchToken(SyntaxKind.OpenParenthesisToken);
+        var expression = ParseExpression();
+        var right = MatchToken(SyntaxKind.CloseParenthesisToken);
+        return new ParenthesizedExpressionSyntax(left, expression, right);
+    }
+
+    private ExpressionSyntax ParseBooleanLiteral()
+    {
+        var isTrue= Current.SyntaxKind == SyntaxKind.TrueKeyword;
+        var keywordToken = isTrue ? MatchToken(SyntaxKind.TrueKeyword) : MatchToken(SyntaxKind.FalseKeyword);   
+        return new LiteralExpressionSyntax(keywordToken, isTrue);
+    }
+
+    private ExpressionSyntax ParseNameToken()
+    {
+        var identifierToken = MatchToken(SyntaxKind.IdentifierToken); ;
+        return new NameExpressionSyntax(identifierToken);
     }
 }

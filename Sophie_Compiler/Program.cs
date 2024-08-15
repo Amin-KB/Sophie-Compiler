@@ -3,7 +3,6 @@ using Compiler.CodeAnalysis.Syntax;
 using Compiler.CodeAnalysis.Binding;
 using Compiler.CodeAnalysis;
 
-
 Run();
 static void Run()
 {
