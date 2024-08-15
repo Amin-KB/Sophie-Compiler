@@ -4,19 +4,7 @@ public sealed class BinaryExpressionSyntax:ExpressionSyntax
 {
     public override SyntaxKind SyntaxKind => SyntaxKind.BinaryExpression;
 
-    /// <summary>
-    /// Gets the children of this SyntaxNode.
-    /// </summary>
-    /// <returns>
-    /// An enumerable collection of SyntaxNode representing the children of this SyntaxNode.
-    /// </returns>
-    public override IEnumerable<SyntaxNode> GetChildren()
-    {
-        yield return Left;
-        yield return OperatorToken;
-        yield return Right;
-        
-    }
+  
 
     /// <summary>
     /// Gets the left side of the expression.

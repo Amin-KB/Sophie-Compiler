@@ -5,8 +5,8 @@ namespace Compiler.CodeAnalysis.Syntax;
 
 internal sealed class Parser
 {
-    private readonly SyntaxToken[] _tokens;
-    private int _position;
+    private readonly ImmutableArray<SyntaxToken> _tokens;
+    private int _position; 
     private readonly DiagnosticBag _errorDiagnostics = new DiagnosticBag();
     public DiagnosticBag ErrorDiagnostics => _errorDiagnostics;
 
@@ -25,7 +25,7 @@ internal sealed class Parser
             }
         } while (token.SyntaxKind != SyntaxKind.EndOfFileToken);
 
-        _tokens = tokens.ToArray();
+        _tokens = tokens.ToImmutableArray();
         _errorDiagnostics.AddRange(lexer.ErrorDiagnostics);
     }
 

@@ -18,11 +18,5 @@ public class AssignmentExpressionSyntax : ExpressionSyntax
 
     public override SyntaxKind SyntaxKind => SyntaxKind.AssignmentEsxpression;
 
-    public override IEnumerable<SyntaxNode> GetChildren()
 
-    {
-        yield return IdentifierToken;
-        yield return EqualToken;
-        yield return Expression;
-    }
 }

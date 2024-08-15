@@ -12,8 +12,5 @@ public sealed class NameExpressionSyntax : ExpressionSyntax
 
     public override SyntaxKind SyntaxKind => SyntaxKind.NameExpression;
 
-    public override IEnumerable<SyntaxNode> GetChildren()
-    {
-        yield return IdentifierToken;
-    }
+
 }

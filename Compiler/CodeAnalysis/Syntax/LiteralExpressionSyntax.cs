@@ -3,10 +3,7 @@
 public sealed class LiteralExpressionSyntax:ExpressionSyntax
 {
     public override SyntaxKind SyntaxKind => SyntaxKind.LiteralExpression;
-    public override IEnumerable<SyntaxNode> GetChildren()
-    {
-        yield return LiteralToken;
-    }
+ 
 
     public SyntaxToken LiteralToken { get;  }
     public object Value { get;  }
