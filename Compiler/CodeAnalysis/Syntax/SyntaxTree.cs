@@ -1,16 +1,18 @@
-﻿namespace Compiler.CodeAnalysis.Syntax;
+﻿using System.Collections.Immutable;
+
+namespace Compiler.CodeAnalysis.Syntax;
 
 public sealed class SyntaxTree
 {
     public ExpressionSyntax Root { get; }
     public SyntaxToken EndOfFileToken { get; }
-    public IReadOnlyList<Diagnostic> Diagnostics { get; }
+    public ImmutableArray<Diagnostic> Diagnostics { get; }
 
-    public SyntaxTree(IEnumerable<Diagnostic> diagnostics, ExpressionSyntax root, SyntaxToken endOfFileToken)
+    public SyntaxTree(ImmutableArray<Diagnostic> diagnostics, ExpressionSyntax root, SyntaxToken endOfFileToken)
     {
         Root = root;
         EndOfFileToken = endOfFileToken;
-        Diagnostics = diagnostics.ToArray();
+        Diagnostics = diagnostics;
     }
 
     public static SyntaxTree Parse(string text)

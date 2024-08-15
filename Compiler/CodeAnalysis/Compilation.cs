@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Immutable;
 using Compiler.CodeAnalysis.Binding;
 using Compiler.CodeAnalysis.Syntax;
 
@@ -16,13 +17,13 @@ public sealed class Compilation
     {
         var binder = new Binder(variables);
         var boundExpression = binder.BindExpression(Syntax.Root);
-        var diagnostics = Syntax.Diagnostics.Concat(binder.Diagnostics).ToArray();
+        var diagnostics = Syntax.Diagnostics.Concat(binder.Diagnostics).ToImmutableArray();
         if (diagnostics.Any())
             return new EvaluationResult(diagnostics, null);
         
         var evaluator = new Evaluator(boundExpression,variables);
         var value = evaluator.Evaluate();
-        return new EvaluationResult(Array.Empty<Diagnostic>(), value);
+        return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, value);
     }
 
   

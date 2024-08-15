@@ -1,4 +1,5 @@
-﻿using System.Xml.Xsl;
+﻿using System.Collections.Immutable;
+using System.Xml.Xsl;
 
 namespace Compiler.CodeAnalysis.Syntax;
 
@@ -106,7 +107,7 @@ internal sealed class Parser
     {
         var expression = ParseExpression();
         var endOfFileToken = MatchToken(SyntaxKind.EndOfFileToken);
-        return new SyntaxTree(_errorDiagnostics, expression, endOfFileToken);
+        return new SyntaxTree(_errorDiagnostics.ToImmutableArray(), expression, endOfFileToken);
     }
 
 
