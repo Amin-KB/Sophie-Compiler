@@ -19,7 +19,7 @@ static void Run()
         var _diagnostics = result.Diagnostics;
         var color = Console.ForegroundColor;
         Console.ForegroundColor = ConsoleColor.DarkGray;
-       Print(syntaxTree.Root);
+        syntaxTree.Root.WriteTo(Console.Out);
         
         Console.ForegroundColor = color;
         if (!_diagnostics.Any())
@@ -56,23 +56,3 @@ static void Run()
     }
 }
 
-static void Print(SyntaxNode node, string indent = "",bool isLast=false)
-{
-    var marker = isLast ? "\u2514\u2500\u2500" : "\u251c\u2500\u2500";
-    Console.Write(indent);
-    Console.Write(marker);
-    Console.Write(node.SyntaxKind);
-    if (node is SyntaxToken t && t.Value != null)
-    {
-        Console.Write(" ");
-        Console.Write(t.Value);
-    }
-
-    Console.WriteLine();
-    indent += isLast ? "   " : "\u2502  ";
-    var lastChild = node.GetChildren().LastOrDefault();
-    foreach (var child in node.GetChildren())
-    {
-        Print(child, indent,child==lastChild);
-    }
-}
