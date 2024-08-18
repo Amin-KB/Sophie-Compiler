@@ -48,6 +48,7 @@ internal sealed class Binder
         if (variable == null)
         {
             _diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
+            return new BoundLiteralExpression(0);
         }
 
 
