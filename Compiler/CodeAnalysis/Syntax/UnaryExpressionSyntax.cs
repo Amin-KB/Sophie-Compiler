@@ -5,12 +5,12 @@ public class UnaryExpressionSyntax:ExpressionSyntax
     public override SyntaxKind SyntaxKind => SyntaxKind.UnaryExpression;
 
 
-    
- 
+    public SyntaxToken OperatorToken { get; }
+
     public ExpressionSyntax Operand { get; }
 
  
-    public SyntaxToken OperatorToken { get; }
+  
 
   
     public UnaryExpressionSyntax(SyntaxToken operatorToken,ExpressionSyntax operand)

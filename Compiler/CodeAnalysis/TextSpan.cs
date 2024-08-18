@@ -1,4 +1,5 @@
-﻿namespace Compiler.CodeAnalysis;
+﻿
+namespace Compiler.CodeAnalysis;
 
 public struct TextSpan
 {
@@ -12,4 +13,9 @@ public struct TextSpan
 
     public int Start { get;  }
     public int End => Start + Length;
+
+    internal static TextSpan FromBounds(int start, int end)
+    {
+        throw new NotImplementedException();
+    }
 }

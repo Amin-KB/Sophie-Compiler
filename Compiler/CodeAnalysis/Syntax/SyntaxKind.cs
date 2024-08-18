@@ -3,6 +3,7 @@
 public enum SyntaxKind
 {
     //Tokens
+    EndOfFileToken,
     NumberToken,
     WhiteSpaceToken,
     PlusToken,
@@ -11,8 +12,10 @@ public enum SyntaxKind
     SlashToken,
     OpenParenthesisToken,
     CloseParenthesisToken,
+    BangToken,
+    EqualToken,
     BadToken,
-    EndOfFileToken,
+  
   
     //Expressions
     LiteralExpression,
@@ -22,7 +25,7 @@ public enum SyntaxKind
     TrueKeyword,
     FalseKeyword,
     IdentifierToken,
-    BangToken,
+  
     AmpersandAmperSandToken,
     PipePipeToken,
     EqualEqualToken,
@@ -30,5 +33,5 @@ public enum SyntaxKind
     BangEqualToken,
     NameExpression,
     AssignmentEsxpression,
-    EqualToken
+   
 }

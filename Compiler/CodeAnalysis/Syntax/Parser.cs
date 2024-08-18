@@ -5,9 +5,10 @@ namespace Compiler.CodeAnalysis.Syntax;
 
 internal sealed class Parser
 {
+    private readonly DiagnosticBag _errorDiagnostics = new DiagnosticBag();
     private readonly ImmutableArray<SyntaxToken> _tokens;
     private int _position; 
-    private readonly DiagnosticBag _errorDiagnostics = new DiagnosticBag();
+ 
     public DiagnosticBag ErrorDiagnostics => _errorDiagnostics;
 
     public Parser(string text)

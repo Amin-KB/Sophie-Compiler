@@ -7,10 +7,10 @@ public sealed class NameExpressionSyntax : ExpressionSyntax
         IdentifierToken = identifierToken;
     }
 
-
+    public override SyntaxKind SyntaxKind => SyntaxKind.NameExpression;
     public SyntaxToken IdentifierToken { get; }
 
-    public override SyntaxKind SyntaxKind => SyntaxKind.NameExpression;
+   
 
 
 }

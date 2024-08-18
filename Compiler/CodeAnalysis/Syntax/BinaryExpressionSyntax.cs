@@ -15,6 +15,17 @@ public sealed class BinaryExpressionSyntax:ExpressionSyntax
     public ExpressionSyntax Left { get; }
 
     /// <summary>
+    /// Gets the syntax token representing the operator.
+    /// </summary>
+    /// <remarks>
+    /// The operator token provides access to the syntax element that represents the operator in the code.
+    /// </remarks>
+    /// <returns>
+    /// The syntax token representing the operator.
+    /// </returns>
+    public SyntaxToken OperatorToken { get; }
+
+    /// <summary>
     /// Gets the right expression of the current expression syntax.
     /// </summary>
     /// <remarks>
@@ -25,16 +36,6 @@ public sealed class BinaryExpressionSyntax:ExpressionSyntax
     /// </value>
     public ExpressionSyntax Right { get; }
 
-    /// <summary>
-    /// Gets the syntax token representing the operator.
-    /// </summary>
-    /// <remarks>
-    /// The operator token provides access to the syntax element that represents the operator in the code.
-    /// </remarks>
-    /// <returns>
-    /// The syntax token representing the operator.
-    /// </returns>
-    public SyntaxToken OperatorToken { get; }
 
   
     public BinaryExpressionSyntax(ExpressionSyntax left,SyntaxToken operatorToken,ExpressionSyntax right)

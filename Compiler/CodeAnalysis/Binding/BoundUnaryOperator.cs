@@ -34,8 +34,8 @@ internal sealed class BoundUnaryOperator
     }
     public SyntaxKind SyntaxKind { get;  }
     public Type ResultType { get;  }
-
+    public BoundUnaryOperatorKind Kind { get; }
     public Type OperandType { get;  }
 
-    public BoundUnaryOperatorKind Kind { get;  }
+  
 }

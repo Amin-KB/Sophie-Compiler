@@ -4,9 +4,11 @@ namespace Compiler.CodeAnalysis.Syntax;
 
 public sealed class SyntaxTree
 {
-    public ExpressionSyntax Root { get; }
-    public SyntaxToken EndOfFileToken { get; }
     public ImmutableArray<Diagnostic> Diagnostics { get; }
+    public ExpressionSyntax Root { get; }
+
+    public SyntaxToken EndOfFileToken { get; }
+
 
     public SyntaxTree(ImmutableArray<Diagnostic> diagnostics, ExpressionSyntax root, SyntaxToken endOfFileToken)
     {

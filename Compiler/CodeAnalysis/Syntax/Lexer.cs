@@ -2,9 +2,10 @@
 
 internal sealed class Lexer
 {
+  
+    private DiagnosticBag _errorDiagnostics = new DiagnosticBag();
     private readonly string _text;
     private int _position;
-    private DiagnosticBag _errorDiagnostics = new DiagnosticBag();
     public DiagnosticBag ErrorDiagnostics => _errorDiagnostics;
     private int _start;
     private SyntaxKind _kind;
