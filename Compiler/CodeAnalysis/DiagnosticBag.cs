@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Compiler.CodeAnalysis.Syntax;
+using Compiler.CodeAnalysis.Text;
 
 namespace Compiler.CodeAnalysis;
 

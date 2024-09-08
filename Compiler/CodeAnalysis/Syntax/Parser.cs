@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Xml.Xsl;
+using Compiler.CodeAnalysis.Text;
 
 namespace Compiler.CodeAnalysis.Syntax;
 
@@ -11,7 +12,7 @@ internal sealed class Parser
  
     public DiagnosticBag ErrorDiagnostics => _errorDiagnostics;
 
-    public Parser(string text)
+    public Parser(SourceText text)
     {
         var tokens = new List<SyntaxToken>();
         var lexer = new Lexer(text);

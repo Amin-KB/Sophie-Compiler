@@ -1,17 +1,18 @@
-﻿namespace Compiler.CodeAnalysis.Syntax;
+﻿using Compiler.CodeAnalysis.Text;
+
+namespace Compiler.CodeAnalysis.Syntax;
 
 internal sealed class Lexer
 {
-  
     private DiagnosticBag _errorDiagnostics = new DiagnosticBag();
-    private readonly string _text;
+    private readonly SourceText _text;
     private int _position;
     public DiagnosticBag ErrorDiagnostics => _errorDiagnostics;
     private int _start;
     private SyntaxKind _kind;
     private object _value;
 
-    public Lexer(string text)
+    public Lexer(SourceText text)
     {
         _text = text;
     }
@@ -27,8 +28,6 @@ internal sealed class Lexer
         return _text[index];
     }
 
-
- 
 
     /// <summary>
     /// Retrieves the next token from the input stream.
@@ -85,7 +84,6 @@ internal sealed class Lexer
                     _kind = SyntaxKind.PipePipeToken;
                     _position += 2;
                     break;
-
                 }
 
                 break;
@@ -94,14 +92,13 @@ internal sealed class Lexer
                 if (Current != '=')
                 {
                     _kind = SyntaxKind.EqualToken;
-
                 }
                 else
                 {
                     _kind = SyntaxKind.EqualEqualToken;
                     _position++;
-
                 }
+
                 break;
 
             case ('!'):
@@ -115,8 +112,8 @@ internal sealed class Lexer
                 {
                     _kind = SyntaxKind.BangEqualToken;
                     _position++;
-
                 }
+
                 break;
             case '0':
             case '1':
@@ -151,15 +148,15 @@ internal sealed class Lexer
                     _errorDiagnostics.ReportBadCharacter(_position, Current);
                     _position++;
                 }
-                break;
 
+                break;
         }
-        var length = _position - _start ;
+
+        var length = _position - _start;
         var text = SyntaxFact.GetText(_kind);
         if (text == null)
-            text = _text.Substring(_start, length);
+            text = _text.ToString(_start, length);
         return new SyntaxToken(_kind, _start, text, _value);
-
     }
 
     private void ReadIdentifierOrKeyword()
@@ -167,15 +164,14 @@ internal sealed class Lexer
         while (char.IsLetter(Current))
             _position++;
         var length = _position - _start;
-        var text = _text.Substring(_start, length);
+        var text = _text.ToString(_start, length);
         _kind = SyntaxFact.GetKeywordKind(text);
-
     }
 
     private void ReadWhiteSpace()
     {
         while (char.IsWhiteSpace(Current))
-           _position++;
+            _position++;
         _kind = SyntaxKind.WhiteSpaceToken;
     }
 
@@ -184,9 +180,9 @@ internal sealed class Lexer
         while (char.IsDigit(Current))
             _position++;
         var length = _position - _start;
-        var text = _text.Substring(_start, length);
+        var text = _text.ToString(_start, length);
         if (!int.TryParse(text, out var value))
-            _errorDiagnostics.ReportInvalidNumber(new TextSpan(_start, length), _text, typeof(int));
+            _errorDiagnostics.ReportInvalidNumber(new TextSpan(_start, length), text, typeof(int));
         _value = value;
         _kind = SyntaxKind.NumberToken;
     }
