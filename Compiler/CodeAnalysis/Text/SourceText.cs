@@ -6,7 +6,7 @@ namespace Compiler.CodeAnalysis.Text;
 public sealed class SourceText
 {
     private readonly string _text;
-    public ImmutableArray<TextLine> Lines { get; set; }
+    public ImmutableArray<TextLine> Lines { get; }
 
     public SourceText(string text)
     {
@@ -31,14 +31,14 @@ public sealed class SourceText
             }
             else
             {
-                AddLine(sourceText, position, lineStart, lineBreakWidth);
+                AddLine(result, sourceText, position, lineStart, lineBreakWidth);
                 position += lineBreakWidth;
                 lineStart = position;
             }
         }
 
-        if (position > text.Length)
-            AddLine(sourceText, position, lineStart, 0);
+        if (position > lineStart)
+            AddLine(result, sourceText, position, lineStart, 0);
 
         return result.ToImmutable();
     }
@@ -64,11 +64,13 @@ public sealed class SourceText
         return lower - 1;
     }
 
-    private static void AddLine(SourceText sourceText, int position, int lineStart, int lineBreakWidth)
+    private static void AddLine(ImmutableArray<TextLine>.Builder result, SourceText sourceText, int position,
+        int lineStart, int lineBreakWidth)
     {
         var lineLength = position - lineStart;
         var lineLengthIncludingLineBreak = lineLength + lineBreakWidth;
         var line = new TextLine(sourceText, lineStart, lineLength, lineLengthIncludingLineBreak);
+        result.Add(line);
     }
 
     private static int GetLineBreakeWidth(string text, int position)

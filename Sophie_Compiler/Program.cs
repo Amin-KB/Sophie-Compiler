@@ -2,6 +2,7 @@
 using Compiler.CodeAnalysis.Syntax;
 using Compiler.CodeAnalysis.Binding;
 using Compiler.CodeAnalysis;
+using Compiler.CodeAnalysis.Text;
 
 Run();
 static void Run()
@@ -16,13 +17,13 @@ static void Run()
         var syntaxTree = SyntaxTree.Parse(line);
         var compilation = new Compilation(syntaxTree);
         var result = compilation.Evaluate(variables);
-        var _diagnostics = result.Diagnostics;
+      
         var color = Console.ForegroundColor;
         Console.ForegroundColor = ConsoleColor.DarkGray;
         syntaxTree.Root.WriteTo(Console.Out);
         
         Console.ForegroundColor = color;
-        if (!_diagnostics.Any())
+        if (! result.Diagnostics.Any())
         {
         
            
@@ -30,11 +31,15 @@ static void Run()
         }
         else
         {
-            
-            foreach (var diagnostic in _diagnostics)
+            var text = syntaxTree.Text;
+            foreach (var diagnostic in  result.Diagnostics)
             {
+                var lineIndex=text.GetLineIndex(diagnostic.TextSpan.Start);
+                var lineNumber=lineIndex+1;
+                var character=diagnostic.TextSpan.Start - text.Lines[lineIndex].Start+1;
                 Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write($"({lineNumber},{character}): ");
                 Console.WriteLine(diagnostic);
                 Console.ResetColor();
                 var prefix = line.Substring(0, diagnostic.TextSpan.Start);

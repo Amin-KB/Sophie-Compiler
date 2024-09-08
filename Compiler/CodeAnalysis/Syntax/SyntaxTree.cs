@@ -5,14 +5,16 @@ namespace Compiler.CodeAnalysis.Syntax;
 
 public sealed class SyntaxTree
 {
+    public SourceText Text { get; }
     public ImmutableArray<Diagnostic> Diagnostics { get; }
     public ExpressionSyntax Root { get; }
 
     public SyntaxToken EndOfFileToken { get; }
 
 
-    public SyntaxTree(ImmutableArray<Diagnostic> diagnostics, ExpressionSyntax root, SyntaxToken endOfFileToken)
+    public SyntaxTree(SourceText text,ImmutableArray<Diagnostic> diagnostics, ExpressionSyntax root, SyntaxToken endOfFileToken)
     {
+        Text = text;
         Root = root;
         EndOfFileToken = endOfFileToken;
         Diagnostics = diagnostics;

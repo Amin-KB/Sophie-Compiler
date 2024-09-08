@@ -7,9 +7,11 @@ namespace Compiler.CodeAnalysis.Syntax;
 internal sealed class Parser
 {
     private readonly DiagnosticBag _errorDiagnostics = new DiagnosticBag();
+    private readonly SourceText _text;
     private readonly ImmutableArray<SyntaxToken> _tokens;
-    private int _position; 
- 
+    private int _position;
+
+
     public DiagnosticBag ErrorDiagnostics => _errorDiagnostics;
 
     public Parser(SourceText text)
@@ -27,6 +29,7 @@ internal sealed class Parser
             }
         } while (token.SyntaxKind != SyntaxKind.EndOfFileToken);
 
+        _text = text;
         _tokens = tokens.ToImmutableArray();
         _errorDiagnostics.AddRange(lexer.ErrorDiagnostics);
     }
@@ -109,7 +112,7 @@ internal sealed class Parser
     {
         var expression = ParseExpression();
         var endOfFileToken = MatchToken(SyntaxKind.EndOfFileToken);
-        return new SyntaxTree(_errorDiagnostics.ToImmutableArray(), expression, endOfFileToken);
+        return new SyntaxTree(_text,_errorDiagnostics.ToImmutableArray(), expression, endOfFileToken);
     }
 
 
