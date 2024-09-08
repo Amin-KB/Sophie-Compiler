@@ -47,11 +47,10 @@ public abstract class SyntaxNode
         var marker = isLast ? "\u2514\u2500\u2500" : "\u251c\u2500\u2500";
         textWriter.Write(indent);
         if (isToConsole)
-        {
             Console.ForegroundColor = ConsoleColor.DarkGray;
-            textWriter.Write(marker);
-            Console.ResetColor();
-        }
+
+        textWriter.Write(marker);
+     
 
         if (isToConsole)
             Console.ForegroundColor = node is SyntaxToken ? ConsoleColor.Blue : ConsoleColor.DarkCyan;
@@ -67,7 +66,7 @@ public abstract class SyntaxNode
 
         if (isToConsole)
             Console.ResetColor();
-        
+
         textWriter.WriteLine();
         indent += isLast ? "   " : "\u2502  ";
         var lastChild = node.GetChildren().LastOrDefault();
