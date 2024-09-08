@@ -15,23 +15,24 @@ public enum SyntaxKind
     BangToken,
     EqualToken,
     BadToken,
-  
-  
+    AmpersandAmpersandToken,
+    PipePipeToken,
+    EqualEqualToken,
+    IdentifierToken,
+    BangEqualToken,
+    
     //Expressions
     LiteralExpression,
     BinaryExpression,
     ParenthesizedExpression,
     UnaryExpression,
+    NameExpression,
+    AssignmentExpression,
+    
+    //Keyword
     TrueKeyword,
     FalseKeyword,
-    IdentifierToken,
-  
-    AmpersandAmperSandToken,
-    PipePipeToken,
-    EqualEqualToken,
-   
-    BangEqualToken,
-    NameExpression,
-    AssignmentEsxpression,
-   
+ 
+    //Node
+    CompilationUnit
 }

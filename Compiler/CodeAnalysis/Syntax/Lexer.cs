@@ -72,7 +72,7 @@ internal sealed class Lexer
             case ('&'):
                 if (LookAhead == '&')
                 {
-                    _kind = SyntaxKind.AmpersandAmperSandToken;
+                    _kind = SyntaxKind.AmpersandAmpersandToken;
                     _position += 2;
                     break;
                 }

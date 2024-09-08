@@ -7,17 +7,19 @@ public sealed class SyntaxTree
 {
     public SourceText Text { get; }
     public ImmutableArray<Diagnostic> Diagnostics { get; }
-    public ExpressionSyntax Root { get; }
+    public CompilationUnitSyntax Root { get; }
 
     public SyntaxToken EndOfFileToken { get; }
 
 
-    public SyntaxTree(SourceText text,ImmutableArray<Diagnostic> diagnostics, ExpressionSyntax root, SyntaxToken endOfFileToken)
+    private SyntaxTree(SourceText text)
     {
+        var parser = new Parser(text);
+        Root =  parser.ParseCompilationUnit();
+        var diagnostics = parser.ErrorDiagnostics.ToImmutableArray();
         Text = text;
-        Root = root;
-        EndOfFileToken = endOfFileToken;
         Diagnostics = diagnostics;
+      
     }
     public static SyntaxTree Parse(string text)
     {
@@ -27,8 +29,7 @@ public sealed class SyntaxTree
     }
     public static SyntaxTree Parse(SourceText text)
     {
-        var parser = new Parser(text);
-        return parser.Parse();
+        return new SyntaxTree(text);
     }
     public static IEnumerable<SyntaxToken> ParseToken(string text)
     {

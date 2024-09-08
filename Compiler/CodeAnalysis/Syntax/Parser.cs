@@ -108,11 +108,11 @@ internal sealed class Parser
     }
 
 
-    public SyntaxTree Parse()
+    public CompilationUnitSyntax ParseCompilationUnit()
     {
         var expression = ParseExpression();
         var endOfFileToken = MatchToken(SyntaxKind.EndOfFileToken);
-        return new SyntaxTree(_text,_errorDiagnostics.ToImmutableArray(), expression, endOfFileToken);
+        return new CompilationUnitSyntax(expression, endOfFileToken);
     }
 
 
@@ -130,10 +130,6 @@ internal sealed class Parser
             case SyntaxKind.IdentifierToken:
             default:
                 return ParseNameToken();
-
-
-
-
         }
     }
 
@@ -163,4 +159,5 @@ internal sealed class Parser
         var identifierToken = MatchToken(SyntaxKind.IdentifierToken); ;
         return new NameExpressionSyntax(identifierToken);
     }
+
 }

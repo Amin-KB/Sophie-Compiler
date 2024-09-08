@@ -29,7 +29,7 @@ public static class SyntaxFact
             case SyntaxKind.EqualEqualToken:
             case SyntaxKind.BangEqualToken:
                 return 3;
-            case SyntaxKind.AmpersandAmperSandToken:
+            case SyntaxKind.AmpersandAmpersandToken:
                 return 2;
             case SyntaxKind.PipePipeToken:
                 return 1;
@@ -74,7 +74,7 @@ public static class SyntaxFact
                 return "false";
             case SyntaxKind.BangToken:
                 return "!";
-            case SyntaxKind.AmpersandAmperSandToken:
+            case SyntaxKind.AmpersandAmpersandToken:
                 return "&&";
             case SyntaxKind.PipePipeToken:
                 return "||";

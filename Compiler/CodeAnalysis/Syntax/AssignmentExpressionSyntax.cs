@@ -3,7 +3,7 @@
 public class AssignmentExpressionSyntax : ExpressionSyntax
 {
  
-    public override SyntaxKind SyntaxKind => SyntaxKind.AssignmentEsxpression;
+    public override SyntaxKind SyntaxKind => SyntaxKind.AssignmentExpression;
     public SyntaxToken IdentifierToken { get; }
     public SyntaxToken EqualToken { get; }
     public ExpressionSyntax Expression { get; }
