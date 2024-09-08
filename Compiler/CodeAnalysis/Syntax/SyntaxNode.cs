@@ -16,6 +16,7 @@ public abstract class SyntaxNode
             return TextSpan.FromBounds(first.Start, last.End);
         }
     }
+
     public IEnumerable<SyntaxNode> GetChildren()
     {
         var properties = GetType().GetProperties(System.Reflection.BindingFlags.Public | BindingFlags.Instance);
@@ -34,22 +35,39 @@ public abstract class SyntaxNode
             }
         }
     }
+
     public void WriteTo(TextWriter writer)
     {
         Print(writer, this);
     }
+
     private static void Print(TextWriter textWriter, SyntaxNode node, string indent = "", bool isLast = false)
     {
+        var isToConsole = textWriter == Console.Out;
         var marker = isLast ? "\u2514\u2500\u2500" : "\u251c\u2500\u2500";
         textWriter.Write(indent);
-        textWriter.Write(marker);
+        if (isToConsole)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            textWriter.Write(marker);
+            Console.ResetColor();
+        }
+
+        if (isToConsole)
+            Console.ForegroundColor = node is SyntaxToken ? ConsoleColor.Blue : ConsoleColor.DarkCyan;
+
         textWriter.Write(node.SyntaxKind);
+
+
         if (node is SyntaxToken t && t.Value != null)
         {
             textWriter.Write(" ");
             textWriter.Write(t.Value);
         }
 
+        if (isToConsole)
+            Console.ResetColor();
+        
         textWriter.WriteLine();
         indent += isLast ? "   " : "\u2502  ";
         var lastChild = node.GetChildren().LastOrDefault();

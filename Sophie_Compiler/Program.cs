@@ -14,11 +14,12 @@ static void Run()
     var textBuilder = new StringBuilder();
     while (true)
     {
+        Console.ForegroundColor = ConsoleColor.Blue;
         if (textBuilder.Length == 0)
-            Console.Write("> ");
+            Console.Write("\u204B ");
         else
-            Console.Write("| ");
-
+            Console.Write("\u204D ");
+        Console.ResetColor();
         var input = Console.ReadLine();
         var isBlank = string.IsNullOrEmpty(input);
 
@@ -31,7 +32,7 @@ static void Run()
             else if (input == "#showTree")
             {
                 showTree = !showTree;
-                Console.Write(showTree ? "Show Parse Tree " : "Hide Parse Tree ");
+                Console.WriteLine(showTree ? "Show Parse Tree " : "Hide Parse Tree ");
                 continue;
             }
             else if (input == "#clr")
@@ -58,7 +59,9 @@ static void Run()
 
         if (!result.Diagnostics.Any())
         {
+            Console.ForegroundColor = ConsoleColor.DarkMagenta;
             Console.WriteLine(result.Value);
+            Console.ResetColor();
         }
         else
         {
@@ -68,15 +71,15 @@ static void Run()
                 var lineIndex = text.GetLineIndex(diagnostic.TextSpan.Start);
                 var line = text.Lines[lineIndex];
                 var lineNumber = lineIndex + 1;
-            
+
                 var character = diagnostic.TextSpan.Start - line.Start + 1;
                 Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.Write($"({lineNumber},{character}): ");
                 Console.WriteLine(diagnostic);
                 Console.ResetColor();
-                var prefixSpan=TextSpan.FromBounds(line.Start,diagnostic.TextSpan.Start);
-                var sufixSpan=TextSpan.FromBounds(diagnostic.TextSpan.End,line.End);
+                var prefixSpan = TextSpan.FromBounds(line.Start, diagnostic.TextSpan.Start);
+                var sufixSpan = TextSpan.FromBounds(diagnostic.TextSpan.End, line.End);
                 var prefix = syntaxTree.Text.ToString(prefixSpan);
                 var error = syntaxTree.Text.ToString(diagnostic.TextSpan);
                 var suffix = syntaxTree.Text.ToString(sufixSpan);
@@ -91,6 +94,7 @@ static void Run()
 
             Console.ResetColor();
         }
+
         textBuilder.Clear();
     }
 }
