@@ -9,16 +9,18 @@ Run();
 
 static void Run()
 {
+    //52
     var showTree = false;
     var variables = new Dictionary<VariableSymbol, object>();
     var textBuilder = new StringBuilder();
+    Compilation previous = null;
     while (true)
     {
         Console.ForegroundColor = ConsoleColor.Blue;
         if (textBuilder.Length == 0)
-            Console.Write("\u204B ");
-        else
             Console.Write("\u204D ");
+        else
+            Console.Write("\u204B ");
         Console.ResetColor();
         var input = Console.ReadLine();
         var isBlank = string.IsNullOrEmpty(input);
@@ -40,6 +42,11 @@ static void Run()
                 Console.Clear();
                 continue;
             }
+            else if (input == "#reset")
+            {
+                previous = null;
+                continue;
+            }
         }
 
         textBuilder.AppendLine(input);
@@ -47,7 +54,11 @@ static void Run()
         var syntaxTree = SyntaxTree.Parse(inputText);
         if (!isBlank && syntaxTree.Diagnostics.Any())
             continue;
-        var compilation = new Compilation(syntaxTree);
+        var compilation = previous == null
+            ? new Compilation(syntaxTree)
+            : previous.ContinueWith(syntaxTree);
+        
+        
         var result = compilation.Evaluate(variables);
 
         if (showTree)
@@ -62,6 +73,8 @@ static void Run()
             Console.ForegroundColor = ConsoleColor.DarkMagenta;
             Console.WriteLine(result.Value);
             Console.ResetColor();
+
+            previous = compilation;
         }
         else
         {

@@ -1,4 +1,6 @@
-﻿using System.Security.Cryptography.X509Certificates;
+﻿using System.Collections.Immutable;
+using System.Formats.Asn1;
+using System.Security.Cryptography.X509Certificates;
 using Compiler.CodeAnalysis.Syntax;
 
 namespace Compiler.CodeAnalysis.Binding;
@@ -7,13 +9,47 @@ internal sealed class Binder
 {
     private readonly DiagnosticBag _diagnostics = new DiagnosticBag();
     public DiagnosticBag Diagnostics => _diagnostics;
+    private BoundScope _scope;
 
-    public Binder(Dictionary<VariableSymbol, object> variables)
+    public Binder(BoundScope parent)
     {
-        _variables = variables;
+        _scope = new BoundScope(parent);
     }
 
-    private readonly Dictionary<VariableSymbol, object> _variables;
+    public static BoundGlobalScope BindGlobalScope(BoundGlobalScope previous, CompilationUnitSyntax syntax)
+    {
+        var parentScope = CreateParentScopes(previous);
+        var binder = new Binder(parentScope);
+        var expression = binder.BindExpression(syntax.Expression);
+        var variables = binder._scope.GetDeclaredVariables();
+        var diagnostics = binder.Diagnostics.ToImmutableArray();
+        if (previous != null)
+            diagnostics = diagnostics.InsertRange(0, previous.Diagnostics);
+        return new BoundGlobalScope(previous, diagnostics, variables, expression);
+    }
+
+    private static BoundScope CreateParentScopes(BoundGlobalScope previous)
+    {
+        //Submission 3 ->Submission 2 ->Submission 1 
+        var stack = new Stack<BoundGlobalScope>();
+        while (previous != null)
+        {
+            stack.Push(previous);
+            previous = previous.Previous;
+        }
+
+        BoundScope parent = null;
+        while (stack.Count > 0)
+        {
+            previous = stack.Pop();
+            var scope = new BoundScope(parent);
+            foreach (var v in previous.Variables)
+                scope.TryDeclareVariable(v);
+            parent = scope;
+        }
+
+        return parent;
+    }
 
     public BoundExpression BindExpression(ExpressionSyntax syntax)
     {
@@ -44,13 +80,12 @@ internal sealed class Binder
     private BoundExpression BindNameExpression(NameExpressionSyntax syntax)
     {
         var name = syntax.IdentifierToken.Text;
-        var variable = _variables.Keys.FirstOrDefault(v => v.Name == name);
-        if (variable == null)
+
+        if (!_scope.TryLookupVariable(name, out var variable))
         {
             _diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
             return new BoundLiteralExpression(0);
         }
-
 
         return new BoundVariableExpression(variable);
     }
@@ -59,16 +94,18 @@ internal sealed class Binder
     {
         var name = syntax.IdentifierToken.Text;
         var boundExpression = BindExpression(syntax.Expression);
-        var existingVariable = _variables.Keys.FirstOrDefault(v => v.Name == name);
-        if (existingVariable != null)
+
+        if (!_scope.TryLookupVariable(name, out var variable))
         {
-            _variables.Remove(existingVariable);
+            variable=new VariableSymbol(name,boundExpression.Type);
+            _scope.TryDeclareVariable(variable);
         }
 
-        var variable = new VariableSymbol(name, boundExpression.Type);
-        _variables[variable] = null;
-
-
+        if (boundExpression.Type != variable.Type)
+        {
+            _diagnostics.ReportCannotConvert(syntax.Expression.Span, boundExpression.Type,variable.Type);
+            return boundExpression;
+        }
         return new BoundAssignmentExpression(variable, boundExpression);
     }
 

@@ -65,4 +65,11 @@ internal sealed class DiagnosticBag : IEnumerable<Diagnostic>
             $"Variable name '{name}' does not exists ";
         Report(span,message);
     }
+    
+    public void ReportCannotConvert(TextSpan span, Type fromType, Type toType)
+    {
+        var message =
+            $"cannot convert type  '{fromType}' to '{toType}' ";
+        Report(span,message);
+    }
 }
