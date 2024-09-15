@@ -39,18 +39,23 @@ public enum SyntaxKind
     FalseKeyword,
     LetKeyword,
     VarKeyword,
+    IfKeyword,
+    ElseKeyword,
     
     
     //Nodes
     CompilationUnit,
+    ElseClause,
+    
     
     //Statements
     BlockStatement,
     ExpressionStatement,
+    IfStatement,
 
     //Declarations
     VariableDeclaration,
 
 
-    
+   
 }

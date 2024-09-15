@@ -122,15 +122,18 @@ internal sealed class Parser
         else if (Current.SyntaxKind == SyntaxKind.LetKeyword ||
                  Current.SyntaxKind == SyntaxKind.VarKeyword)
             return ParseVariableDeclaration();
+        else if (Current.SyntaxKind == SyntaxKind.IfKeyword)
+            return ParseIfStatement();
         else
             return ParseExpressionStatement();
     }
 
+
     private StatementSyntax ParseVariableDeclaration()
     {
-        var expected= Current.SyntaxKind==SyntaxKind.LetKeyword
-                                                  ? SyntaxKind.LetKeyword 
-                                                  : SyntaxKind.VarKeyword;
+        var expected = Current.SyntaxKind == SyntaxKind.LetKeyword
+            ? SyntaxKind.LetKeyword
+            : SyntaxKind.VarKeyword;
         var keywordToken = MatchToken(expected);
         var identifier = MatchToken(SyntaxKind.IdentifierToken);
         var equals = MatchToken(SyntaxKind.EqualToken);
@@ -191,6 +194,24 @@ internal sealed class Parser
         return new ParenthesizedExpressionSyntax(left, expression, right);
     }
 
+    private StatementSyntax ParseIfStatement()
+    {
+        var keywordToken = MatchToken(SyntaxKind.IfKeyword);
+        var condition = ParseExpression();
+        var statement = ParseStatement();
+        var parseClause = ParseElseClause();
+        return new IfStatementSyntax(keywordToken, condition, statement, parseClause);
+    }
+
+    private ElseClauseSyntax ParseElseClause()
+    {
+        if (Current.SyntaxKind != SyntaxKind.ElseKeyword)
+            return null;
+        var keyword = NextToken();
+        var statement = ParseStatement();
+        return new ElseClauseSyntax(keyword, statement);
+    }
+
     private ExpressionSyntax ParseBooleanLiteral()
     {
         var isTrue = Current.SyntaxKind == SyntaxKind.TrueKeyword;
@@ -201,7 +222,6 @@ internal sealed class Parser
     private ExpressionSyntax ParseNameToken()
     {
         var identifierToken = MatchToken(SyntaxKind.IdentifierToken);
-        ;
         return new NameExpressionSyntax(identifierToken);
     }
 }

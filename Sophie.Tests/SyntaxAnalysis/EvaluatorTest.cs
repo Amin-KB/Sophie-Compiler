@@ -17,7 +17,6 @@ public class EvaluatorTest
     [InlineData("12 == 3", false)]
     [InlineData("3 == 3", true)]
     [InlineData("12 != 3", true)]
-    
     [InlineData("12 > 3", true)]
     [InlineData("12 < 3", false)]
     [InlineData("12 >= 3", true)]
@@ -25,7 +24,6 @@ public class EvaluatorTest
     [InlineData("12 <= 3", false)]
     [InlineData("3 > 1", true)]
     [InlineData("3 <= 3", true)]
-    
     [InlineData("3 != 3", false)]
     [InlineData("false == false", true)]
     [InlineData("true == false", false)]
@@ -36,11 +34,14 @@ public class EvaluatorTest
     [InlineData("!true", false)]
     [InlineData("!false", true)]
     [InlineData("{var a = 0 (a = 10) * a }", 100)]
+    [InlineData("{ var a = 0 if a == 0 a = 10  a }", 10)]
+    [InlineData("{ var a = 0 if a == 4 a = 10  a }", 0)]
+    [InlineData("{ var a = 0 if a == 0 a = 10 else a = 5  a }", 10)]
+    [InlineData("{ var a = 0 if a == 4 a = 10 else a = 5  a }", 5)]
     public void Evaluator_Computes_CorrectValues(string text, object expectedValue)
     {
         AssertValue(text, expectedValue);
     }
-
 
 
     [Fact]
@@ -60,9 +61,9 @@ public class EvaluatorTest
         var diagnostics = @" 
          Variable 'x' is already declared.
            ";
-       AssertDiagnostics (text, diagnostics);
-     
+        AssertDiagnostics(text, diagnostics);
     }
+
     [Fact]
     public void Evaluator_Name_Reports_Undefined()
     {
@@ -72,9 +73,9 @@ public class EvaluatorTest
         var diagnostics = @" 
          Variable name 'x' does not exist.
            ";
-        AssertDiagnostics (text, diagnostics);
-     
+        AssertDiagnostics(text, diagnostics);
     }
+
     [Fact]
     public void Evaluator_Assignment_Reports_Undefined()
     {
@@ -88,8 +89,9 @@ public class EvaluatorTest
         var diagnostics = @" 
          Variable 'x' is read-only and cannot be assigned to.
            ";
-        AssertDiagnostics (text, diagnostics);
+        AssertDiagnostics(text, diagnostics);
     }
+
     [Fact]
     public void Evaluator_Assignment_Reports_CannotConvert()
     {
@@ -103,8 +105,9 @@ public class EvaluatorTest
         var diagnostics = @" 
          cannot convert type  'System.Boolean' to 'System.Int32'.
            ";
-        AssertDiagnostics (text, diagnostics);
+        AssertDiagnostics(text, diagnostics);
     }
+
     [Fact]
     public void Evaluator_Unary_Reports_Undefined()
     {
@@ -114,8 +117,9 @@ public class EvaluatorTest
         var diagnostics = @" 
         Unary operator '+' is not defined for type System.Boolean.
            ";
-        AssertDiagnostics (text, diagnostics);
+        AssertDiagnostics(text, diagnostics);
     }
+
     [Fact]
     public void Evaluator_Binary_Reports_Undefined()
     {
@@ -125,8 +129,9 @@ public class EvaluatorTest
         var diagnostics = @" 
         Binary operator '+' is not defined for type System.Int32 and System.Boolean.
            ";
-        AssertDiagnostics (text, diagnostics);
+        AssertDiagnostics(text, diagnostics);
     }
+
     private static void AssertValue(string text, object expectedValue)
     {
         var syntaxTree = SyntaxTree.Parse(text);
@@ -136,6 +141,7 @@ public class EvaluatorTest
         Assert.Empty(result.Diagnostics);
         Assert.Equal(expectedValue, result.Value);
     }
+
     private void AssertDiagnostics(string text, string diagnosticText)
     {
         var annotatedText = AnnotatedText.Parse(text);

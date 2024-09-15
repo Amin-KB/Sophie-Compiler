@@ -59,12 +59,15 @@ internal sealed class Binder
                 return BindBlockStatement((BlockStatementSyntax)syntax);
             case SyntaxKind.VariableDeclaration:
                 return BindVariableDeclaration((VariableDeclarationSyntax)syntax);
+            case SyntaxKind.IfStatement:
+                return BindIfStatement((IfStatementSyntax)syntax);
             case SyntaxKind.ExpressionStatement:
                 return BindExpressionStatement((ExpressionStatementSyntax)syntax);
             default:
                 throw new Exception($"Unexpected syntax {syntax.SyntaxKind}");
         }
     }
+
 
     private BoundStatement BindVariableDeclaration(VariableDeclarationSyntax syntax)
     {
@@ -98,6 +101,14 @@ internal sealed class Binder
 
         _scope = _scope.Parent;
         return new BoundBlockStatement(statements.ToImmutable());
+    }
+
+    private BoundExpression BindExpression(ExpressionSyntax syntax, Type targetType)
+    {
+        var result = BindExpression(syntax);
+        if (result.Type != targetType)
+            _diagnostics.ReportCannotConvert(syntax.Span, result.Type, targetType);
+        return result;
     }
 
     public BoundExpression BindExpression(ExpressionSyntax syntax)
@@ -137,6 +148,16 @@ internal sealed class Binder
         }
 
         return new BoundVariableExpression(variable);
+    }
+
+    private BoundStatement BindIfStatement(IfStatementSyntax syntax)
+    {
+        var condition = BindExpression(syntax.Condition, typeof(bool));
+        var statements = BindStatement(syntax.ThanStatement);
+        var elseStatement= syntax.ElseClause == null
+                                               ? null
+                                               : BindStatement(syntax.ElseClause.ElseStatement);
+        return new BoundIfStatement(condition, statements, elseStatement);
     }
 
     private BoundExpression BindAssignmentExpression(AssignmentExpressionSyntax syntax)
