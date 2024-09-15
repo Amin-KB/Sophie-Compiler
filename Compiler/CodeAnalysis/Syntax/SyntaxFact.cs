@@ -66,11 +66,11 @@ public static class SyntaxFact
                 return "/";
             case SyntaxKind.OpenParenthesisToken:
                 return "(";
-            case SyntaxKind.CloseBraceToken:
-                return ")";
             case SyntaxKind.CloseParenthesisToken:
-                return "{";
+                return ")";
             case SyntaxKind.OpenBraceToken:
+                return "{";
+            case SyntaxKind.CloseBraceToken:
                 return "}";
             case SyntaxKind.TrueKeyword:
                 return "true";
