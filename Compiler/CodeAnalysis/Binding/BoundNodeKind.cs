@@ -14,7 +14,11 @@ public enum BoundNodeKind
     BlockStatement,
     ExpressionStatement,
     IfStatement,
+    WhileStatement,
+    
+    
     //Declarations
     VariableDeclaration,
-   
+
+  
 }

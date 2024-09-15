@@ -33,12 +33,21 @@ internal sealed class Evaluator
             case BoundNodeKind.IfStatement:
                 EvaluateIfStatement((BoundIfStatement)node);
                 break;
+            case BoundNodeKind.WhileStatement:
+                EvaluateWhileStatement((BoundWhileStatement)node);
+                break;
             case BoundNodeKind.ExpressionStatement:
                 EvaluateExpressionStatement((BoundExpressionStatement)node);
                 break;
             default:
                 throw new Exception($"Unexpected Node {node.Kind}");
         }
+    }
+
+    private void EvaluateWhileStatement(BoundWhileStatement node)
+    {
+        while ((bool)EvaluateExpression(node.Condition))
+            EvaluateStatement(node.Body);
     }
 
     private void EvaluateIfStatement(BoundIfStatement node)

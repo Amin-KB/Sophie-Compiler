@@ -59,6 +59,8 @@ public static class SyntaxFact
                 return SyntaxKind.TrueKeyword;
             case "var":
                 return SyntaxKind.VarKeyword;
+            case "while":
+                return SyntaxKind.WhileKeyword;
             default:
                 return SyntaxKind.IdentifierToken;
         }
@@ -86,6 +88,8 @@ public static class SyntaxFact
                 return "}";
             case SyntaxKind.IfKeyword:
                 return "if";
+            case SyntaxKind.WhileKeyword:
+                return "while";
             case SyntaxKind.TrueKeyword:
                 return "true";
             case SyntaxKind.ElseKeyword:
