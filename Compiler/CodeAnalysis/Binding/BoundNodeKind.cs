@@ -15,10 +15,11 @@ public enum BoundNodeKind
     ExpressionStatement,
     IfStatement,
     WhileStatement,
-    
+    ForStatement,
     
     //Declarations
     VariableDeclaration,
 
-  
+
+    
 }

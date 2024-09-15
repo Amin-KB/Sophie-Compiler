@@ -126,8 +126,23 @@ internal sealed class Parser
             return ParseIfStatement();
         else if (Current.SyntaxKind == SyntaxKind.WhileKeyword)
             return ParseWhileStatement();
+        else if (Current.SyntaxKind == SyntaxKind.ForKeyword)
+            return ParseForStatement();
         else
             return ParseExpressionStatement();
+    }
+
+    private StatementSyntax ParseForStatement()
+    {
+        var keywordToken = MatchToken(SyntaxKind.ForKeyword);
+        var identifierToken = MatchToken(SyntaxKind.IdentifierToken);
+        var equalsToken = MatchToken(SyntaxKind.EqualToken);
+        var lowerBound = ParseExpression();
+        var toKeyword = MatchToken(SyntaxKind.ToKeyword);
+        var upperBound = ParseExpression();
+        var body = ParseStatement();
+        return new ForStatementSyntax(keywordToken,identifierToken, equalsToken, lowerBound, toKeyword,upperBound, body);
+
     }
 
     private StatementSyntax ParseWhileStatement()
