@@ -48,42 +48,42 @@ internal sealed class DiagnosticBag : IEnumerable<Diagnostic>
 
     public void ReportUndefinedUnaryOperator(TextSpan span, string operatorText, Type operandType)
     {
-        var message = $"Unary operator '{operatorText}' is not defined for type {operandType}";
+        var message = $"Unary operator '{operatorText}' is not defined for type {operandType}.";
         Report(span,message);
     }
 
-    public void ReportUndefinedBinaryOperator(TextSpan span, string operatorText, Type boundLeftType, Type boundRightType)
+    public void ReportUndefinedBinaryOperator(TextSpan span, string name, Type boundLeftType, Type boundRightType)
     {
         var message =
-            $"Binary operator '{span}' is not defined for type {boundLeftType} and {boundRightType}";
+            $"Binary operator '{name}' is not defined for type {boundLeftType} and {boundRightType}.";
         Report(span,message);
     }
 
     public void ReportUndefinedName(TextSpan span, string name)
     {
         var message =
-            $"Variable name '{name}' does not exists ";
+            $"Variable name '{name}' does not exist.";
         Report(span,message);
     }
     
     public void ReportCannotConvert(TextSpan span, Type fromType, Type toType)
     {
         var message =
-            $"cannot convert type  '{fromType}' to '{toType}' ";
+            $"cannot convert type  '{fromType}' to '{toType}'.";
         Report(span,message);
     }
 
     public void ReportVariableAlreadyDeclared(TextSpan span, string name)
     {
         var message =
-            $"Variable  '{name}' is already declared. ";
+            $"Variable '{name}' is already declared.";
         Report(span,message);
     }
 
     public void ReportCannotAssign(TextSpan span, string name)
     {
         var message =
-            $"Variable  '{name}' is read-only and cannot be assigned to. ";
+            $"Variable '{name}' is read-only and cannot be assigned to.";
         Report(span,message);
     }
 }

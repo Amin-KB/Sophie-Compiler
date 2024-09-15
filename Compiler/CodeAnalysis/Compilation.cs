@@ -11,7 +11,7 @@ public sealed class Compilation
     
     public Compilation(SyntaxTree syntax):this(null, syntax)
     {
-        Syntax = syntax;
+        
     }
     private Compilation(Compilation previous,SyntaxTree syntax)
     {
