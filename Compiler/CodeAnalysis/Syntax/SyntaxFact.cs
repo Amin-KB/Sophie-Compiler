@@ -43,10 +43,14 @@ public static class SyntaxFact
     {
         switch (text)
         {
-            case "true":
-                return SyntaxKind.TrueKeyword;
             case "false":
                 return SyntaxKind.FalseKeyword;
+            case "let":
+                return SyntaxKind.LetKeyword;
+            case "true":
+                return SyntaxKind.TrueKeyword;
+            case "var":
+                return SyntaxKind.VarKeyword;
             default:
                 return SyntaxKind.IdentifierToken;
         }
@@ -76,6 +80,10 @@ public static class SyntaxFact
                 return "true";
             case SyntaxKind.FalseKeyword:
                 return "false";
+            case SyntaxKind.LetKeyword:
+                return "let";
+            case SyntaxKind.VarKeyword:
+                return "var";
             case SyntaxKind.BangToken:
                 return "!";
             case SyntaxKind.AmpersandAmpersandToken:
