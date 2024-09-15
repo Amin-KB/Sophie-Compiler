@@ -83,7 +83,7 @@ internal sealed class Evaluator
         {
             case BoundBinaryOperatorKind.Addition:
                 return (int)left + (int)right;
-            case BoundBinaryOperatorKind.Substraction:
+            case BoundBinaryOperatorKind.Subtraction:
                 return (int)left - (int)right;
             case BoundBinaryOperatorKind.Multiplication:
                 return (int)left * (int)right;
@@ -97,6 +97,14 @@ internal sealed class Evaluator
                 return Equals(left, right);
             case BoundBinaryOperatorKind.NotEquals:
                 return !Equals(left, right);
+            case BoundBinaryOperatorKind.Less:
+                return (int)left < (int)right;
+            case BoundBinaryOperatorKind.LessOrEquals:
+                return (int)left <= (int)right;
+            case BoundBinaryOperatorKind.Greater:
+                return (int)left > (int)right;
+            case BoundBinaryOperatorKind.GreaterOrEquals:
+                return (int)left >= (int)right;
             default:
                 throw new Exception($"Unexpected binary operator {b.Op.Kind}");
         }

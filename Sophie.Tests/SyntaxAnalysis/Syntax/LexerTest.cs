@@ -129,7 +129,14 @@ public class LexerTest
             return true;
         if (aKind == SyntaxKind.EqualToken && bKind == SyntaxKind.EqualEqualToken)
             return true;
-
+        if (aKind == SyntaxKind.LessToken && bKind == SyntaxKind.EqualToken)
+            return true;
+        if (aKind == SyntaxKind.LessToken && bKind == SyntaxKind.EqualEqualToken)
+            return true;
+        if (aKind == SyntaxKind.GreaterToken && bKind == SyntaxKind.EqualToken)
+            return true;
+        if (aKind == SyntaxKind.GreaterToken && bKind == SyntaxKind.EqualEqualToken)
+            return true;
         return false;
     }
 

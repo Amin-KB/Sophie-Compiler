@@ -22,8 +22,10 @@ public enum SyntaxKind
     BangEqualToken,
     OpenBraceToken,
     CloseBraceToken,
-    
-    
+    LessOrEqualToken,
+    LessToken,
+    GreaterOrEqualToken,
+    GreaterToken,
     //Expressions
     LiteralExpression,
     BinaryExpression,
@@ -48,5 +50,7 @@ public enum SyntaxKind
 
     //Declarations
     VariableDeclaration,
+
+
     
 }

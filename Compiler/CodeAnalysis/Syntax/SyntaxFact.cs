@@ -28,6 +28,10 @@ public static class SyntaxFact
                 return 4;
             case SyntaxKind.EqualEqualToken:
             case SyntaxKind.BangEqualToken:
+            case SyntaxKind.LessToken:
+            case SyntaxKind.LessOrEqualToken:
+            case SyntaxKind.GreaterToken:
+            case SyntaxKind.GreaterOrEqualToken:
                 return 3;
             case SyntaxKind.AmpersandAmpersandToken:
                 return 2;
@@ -90,6 +94,14 @@ public static class SyntaxFact
                 return "&&";
             case SyntaxKind.PipePipeToken:
                 return "||";
+            case SyntaxKind.LessToken:
+                return "<";
+            case SyntaxKind.LessOrEqualToken:
+                return "<=";
+            case SyntaxKind.GreaterToken:
+                return ">";
+            case SyntaxKind.GreaterOrEqualToken:
+                return ">=";
             case SyntaxKind.EqualEqualToken:
                 return "==";
             case SyntaxKind.BangEqualToken:

@@ -3,11 +3,15 @@
 public enum BoundBinaryOperatorKind
 {
     Addition,
-    Substraction,
+    Subtraction,
     Multiplication,
     Division,
     LogicalAnd,
     LogicalOr,
     Equals,
-    NotEquals
+    NotEquals,
+    Less,
+    LessOrEquals,
+    Greater,
+    GreaterOrEquals
 }

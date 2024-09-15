@@ -17,6 +17,15 @@ public class EvaluatorTest
     [InlineData("12 == 3", false)]
     [InlineData("3 == 3", true)]
     [InlineData("12 != 3", true)]
+    
+    [InlineData("12 > 3", true)]
+    [InlineData("12 < 3", false)]
+    [InlineData("12 >= 3", true)]
+    [InlineData("12 >= 12", true)]
+    [InlineData("12 <= 3", false)]
+    [InlineData("3 > 1", true)]
+    [InlineData("3 <= 3", true)]
+    
     [InlineData("3 != 3", false)]
     [InlineData("false == false", true)]
     [InlineData("true == false", false)]

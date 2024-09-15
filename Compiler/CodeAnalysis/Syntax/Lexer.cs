@@ -121,7 +121,30 @@ internal sealed class Lexer
                     _kind = SyntaxKind.BangEqualToken;
                     _position++;
                 }
-
+                break;
+            case '<':
+                _position++;
+                if (Current != '=')
+                {
+                    _kind = SyntaxKind.LessToken;
+                }
+                else
+                {
+                    _kind = SyntaxKind.LessOrEqualToken;
+                    _position++;
+                }
+                break;
+            case '>':
+                _position++;
+                if (Current != '=')
+                {
+                    _kind = SyntaxKind.GreaterToken;
+                }
+                else
+                {
+                    _kind = SyntaxKind.GreaterOrEqualToken;
+                    _position++;
+                }
                 break;
             case '0':
             case '1':
