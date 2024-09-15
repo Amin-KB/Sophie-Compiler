@@ -20,7 +20,7 @@ internal sealed class Binder
     {
         var parentScope = CreateParentScopes(previous);
         var binder = new Binder(parentScope);
-        var expression = binder.BindExpression(syntax.Expression);
+        var expression = binder.BindStatement(syntax.Statement);
         var variables = binder._scope.GetDeclaredVariables();
         var diagnostics = binder.Diagnostics.ToImmutableArray();
         if (previous != null)
@@ -49,6 +49,35 @@ internal sealed class Binder
         }
 
         return parent;
+    }
+    private BoundStatement BindStatement(StatementSyntax syntax)
+    {
+        switch (syntax.SyntaxKind)
+        {
+            case SyntaxKind.BlockStatement:
+                return BindBlockStatement((BlockStatementSyntax)syntax);
+            case SyntaxKind.ExpressionStatement:
+                return BindExpressionStatement((ExpressionStatementSyntax)syntax);
+            default:
+                throw new Exception($"Unexpected syntax {syntax.SyntaxKind}");
+        }
+    }
+
+    private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)
+    {
+        var expression = BindExpression(syntax.Expression);
+        return new BoundExpressionStatement(expression);
+    }
+
+    private BoundStatement BindBlockStatement(BlockStatementSyntax syntax)
+    {
+        var statements = ImmutableArray.CreateBuilder<BoundStatement>();
+        foreach (var statementSyntax in syntax.Statements)
+        {
+            var statement = BindStatement(statementSyntax);
+            statements.Add(statement);
+        }
+        return new BoundBlockStatement(statements.ToImmutable());
     }
 
     public BoundExpression BindExpression(ExpressionSyntax syntax)
@@ -145,3 +174,4 @@ internal sealed class Binder
         return new BoundBinaryExpression(boundLeft, boundOperator, boundRight);
     }
 }
+

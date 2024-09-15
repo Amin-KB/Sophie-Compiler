@@ -4,10 +4,11 @@ namespace Compiler.CodeAnalysis;
 
 internal sealed class Evaluator
 {
-    private readonly BoundExpression _root;
+    private readonly BoundStatement _root;
     private readonly Dictionary<VariableSymbol, object> _variables;
+    private object _lastValue;
 
-    public Evaluator(BoundExpression root, Dictionary<VariableSymbol, object> variables)
+    public Evaluator(BoundStatement root, Dictionary<VariableSymbol, object> variables)
     {
         _root = root;
         _variables = variables;
@@ -15,10 +16,37 @@ internal sealed class Evaluator
 
     public object Evaluate()
     {
-        return EvalueteExpression(_root);
+        EvaluateStatement(_root);
+        return _lastValue;
     }
 
-    public object EvalueteExpression(BoundExpression node)
+    public void EvaluateStatement(BoundStatement node)
+    {
+        switch (node.Kind)
+        {
+            case BoundNodeKind.BlockStatement:
+                 EvaluateBlockStatement((BoundBlockStatement)node);
+                break;
+            case BoundNodeKind.ExpressionStatement:
+                 EvaluateExpressionStatement((BoundExpressionStatement)node);
+                break;
+            default:
+                throw new Exception($"Unexpected Node {node.Kind}");
+        }
+    }
+
+    private void EvaluateExpressionStatement(BoundExpressionStatement node)
+    {
+        _lastValue=EvaluateExpression(node.Expression);
+    }
+
+    private void EvaluateBlockStatement(BoundBlockStatement node)
+    {
+        foreach (var statement in node.Statements)
+            EvaluateStatement(statement);
+    }
+
+    private object EvaluateExpression(BoundExpression node)
     {
         switch (node.Kind)
         {
@@ -39,8 +67,8 @@ internal sealed class Evaluator
 
     private object EvaluateBinaryExpression(BoundBinaryExpression b)
     {
-        var left = EvalueteExpression(b.Left);
-        var right = EvalueteExpression(b.Right);
+        var left = EvaluateExpression(b.Left);
+        var right = EvaluateExpression(b.Right);
         switch (b.Op.Kind)
         {
             case BoundBinaryOperatorKind.Addition:
@@ -66,7 +94,7 @@ internal sealed class Evaluator
 
     private object EvaluateUnaryExpression(BoundUnaryExpression u)
     {
-        var operand = EvalueteExpression(u.Operand);
+        var operand = EvaluateExpression(u.Operand);
         if (u.Op.Kind == BoundUnaryOperatorKind.Identity)
             return (int)operand;
         else if (u.Op.Kind == BoundUnaryOperatorKind.Negation)
@@ -79,7 +107,7 @@ internal sealed class Evaluator
 
     private object EvaluateAssignmentExpression(BoundAssignmentExpression a)
     {
-        var value = EvalueteExpression(a.Expression);
+        var value = EvaluateExpression(a.Expression);
         _variables[a.Variable] = value;
         return value;
     }

@@ -20,6 +20,9 @@ public enum SyntaxKind
     EqualEqualToken,
     IdentifierToken,
     BangEqualToken,
+    OpenBraceToken,
+    CloseBraceToken,
+    
     
     //Expressions
     LiteralExpression,
@@ -29,10 +32,15 @@ public enum SyntaxKind
     NameExpression,
     AssignmentExpression,
     
-    //Keyword
+    //Keywords
     TrueKeyword,
     FalseKeyword,
  
-    //Node
-    CompilationUnit
+    //Nodes
+    CompilationUnit,
+    
+    //Statements
+    BlockStatement,
+    ExpressionStatement,
+
 }

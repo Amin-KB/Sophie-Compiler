@@ -9,7 +9,7 @@ Run();
 
 static void Run()
 {
-    //52
+    //1:23
     var showTree = false;
     var variables = new Dictionary<VariableSymbol, object>();
     var textBuilder = new StringBuilder();

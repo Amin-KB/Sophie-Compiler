@@ -104,12 +104,12 @@ public class ParserTest
         }
     }
 
-    ExpressionSyntax ParseExpressionSyntax(string text)
+   private static ExpressionSyntax ParseExpressionSyntax(string text)
     {
         var syntaxTree = SyntaxTree.Parse(text);
         var root = syntaxTree.Root;
-        var expression = root.Expression;
-        return expression;
+        var statement = root.Statement;
+        return Assert.IsType<ExpressionStatementSyntax>(statement).Expression;
     }
 
     public static IEnumerable<object[]> GetBinaryOperatorsPairData()
