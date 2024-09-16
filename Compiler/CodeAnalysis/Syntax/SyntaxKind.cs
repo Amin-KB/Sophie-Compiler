@@ -16,7 +16,9 @@ public enum SyntaxKind
     EqualToken,
     BadToken,
     AmpersandAmpersandToken,
+    AmpersandToken,
     PipePipeToken,
+    PipeToken,
     EqualEqualToken,
     IdentifierToken,
     BangEqualToken,
@@ -26,6 +28,8 @@ public enum SyntaxKind
     LessToken,
     GreaterOrEqualToken,
     GreaterToken,
+    TildeToken,
+    HatToken,
     //Expressions
     LiteralExpression,
     BinaryExpression,
@@ -60,5 +64,5 @@ public enum SyntaxKind
     VariableDeclaration,
 
 
-    
+   
 }

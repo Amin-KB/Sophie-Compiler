@@ -60,7 +60,6 @@ internal sealed class Evaluator
 
     private void EvaluateWhileStatement(BoundWhileStatement node)
     {
-        
         while ((bool)EvaluateExpression(node.Condition))
             EvaluateStatement(node.Body);
     }
@@ -123,6 +122,24 @@ internal sealed class Evaluator
                 return (int)left - (int)right;
             case BoundBinaryOperatorKind.Multiplication:
                 return (int)left * (int)right;
+
+            case BoundBinaryOperatorKind.BitwiseAnd:
+                if (b.Type == typeof(int))
+                    return (int)left & (int)right;
+                else
+                    return (bool)left & (bool)right;
+            case BoundBinaryOperatorKind.BitwiseOr:
+                if (b.Type == typeof(int))
+                    return (int)left | (int)right;
+                else
+                    return (bool)left | (bool)right;
+            case BoundBinaryOperatorKind.BitwiseXor:
+                if (b.Type == typeof(int))
+                    return (int)left ^ (int)right;
+                else
+                    return (bool)left ^ (bool)right;
+
+
             case BoundBinaryOperatorKind.Division:
                 return (int)left / (int)right;
             case BoundBinaryOperatorKind.LogicalAnd:
@@ -155,6 +172,8 @@ internal sealed class Evaluator
             return -(int)operand;
         else if (u.Op.Kind == BoundUnaryOperatorKind.LogicalNegation)
             return !(bool)operand;
+        else if (u.Op.Kind == BoundUnaryOperatorKind.OnesComplement)
+            return ~ (int)operand;
         else
             throw new Exception($"Unexpected binary operator {u.Op.Kind}");
     }

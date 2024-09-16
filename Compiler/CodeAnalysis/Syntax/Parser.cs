@@ -176,11 +176,18 @@ internal sealed class Parser
     {
         var statements = ImmutableArray.CreateBuilder<StatementSyntax>();
         var openBraceToken = MatchToken(SyntaxKind.OpenBraceToken);
+        
         while (Current.SyntaxKind != SyntaxKind.EndOfFileToken &&
                Current.SyntaxKind != SyntaxKind.CloseBraceToken)
         {
+            var startToken = Current;
             var statement = ParseStatement();
             statements.Add(statement);
+            if (Current == startToken)
+            {
+                NextToken();
+            }
+           
         }
 
         var closeraceToken = MatchToken(SyntaxKind.CloseBraceToken);

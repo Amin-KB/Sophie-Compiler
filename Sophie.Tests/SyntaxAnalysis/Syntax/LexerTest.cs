@@ -44,11 +44,11 @@ public class LexerTest
         var tokens = SyntaxTree.ParseToken(text).ToArray();
 
         Assert.Equal(2, tokens.Length);
-        Assert.Equal(tokens[0].SyntaxKind, aKind);
-        Assert.Equal(tokens[0].Text, aText);
-
-        Assert.Equal(tokens[1].SyntaxKind, bKind);
-        Assert.Equal(tokens[1].Text, bText);
+        
+        Assert.Equal(aKind,tokens[0].SyntaxKind );
+        Assert.Equal(aText,tokens[0].Text );
+        Assert.Equal(bKind,tokens[1].SyntaxKind);
+        Assert.Equal(bText,tokens[1].Text );
     }
 
     [Theory]
@@ -136,6 +136,14 @@ public class LexerTest
         if (aKind == SyntaxKind.GreaterToken && bKind == SyntaxKind.EqualToken)
             return true;
         if (aKind == SyntaxKind.GreaterToken && bKind == SyntaxKind.EqualEqualToken)
+            return true;
+        if (aKind == SyntaxKind.AmpersandToken && bKind == SyntaxKind.AmpersandToken)
+            return true;
+        if (aKind == SyntaxKind.AmpersandToken && bKind == SyntaxKind.AmpersandAmpersandToken)
+            return true;
+        if (aKind == SyntaxKind.PipeToken && bKind == SyntaxKind.PipeToken)
+            return true;
+        if (aKind == SyntaxKind.PipeToken && bKind == SyntaxKind.PipePipeToken)
             return true;
         return false;
     }

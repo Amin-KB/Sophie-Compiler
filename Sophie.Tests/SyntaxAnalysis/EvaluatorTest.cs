@@ -9,6 +9,7 @@ public class EvaluatorTest
     [InlineData("1", 1)]
     [InlineData("+1", 1)]
     [InlineData("-1", -1)]
+    [InlineData("~1", -2)]
     [InlineData("14 + 12", 26)]
     [InlineData("12 - 3", 9)]
     [InlineData("4 * 2", 8)]
@@ -25,6 +26,15 @@ public class EvaluatorTest
     [InlineData("3 > 1", true)]
     [InlineData("3 <= 3", true)]
     [InlineData("3 != 3", false)]
+    
+    [InlineData("1 | 2", 3)]
+    [InlineData("1 | 0", 1)]
+    [InlineData("1 & 3", 1)]
+    [InlineData("1 & 0", 0)]
+    [InlineData("1^0", 1)]
+    [InlineData("0 ^ 1", 1)]
+    [InlineData("1 ^ 3", 2)]
+    
     [InlineData("false == false", true)]
     [InlineData("true == false", false)]
     [InlineData("false != false", false)]
@@ -39,7 +49,6 @@ public class EvaluatorTest
     [InlineData("{ var a = 0 if a == 0 a = 10 else a = 5  a }", 10)]
     [InlineData("{ var a = 0 if a == 4 a = 10 else a = 5  a }", 5)]
     [InlineData("{ var i = 10 var result =0  while i > 0 {result = result + i i = i - 1 } result }", 55)]
-
     [InlineData("{ var result = 0 for i = 1 to 10 {result = result + i } result }", 55)]
     public void Evaluator_Computes_CorrectValues(string text, object expectedValue)
     {
@@ -110,6 +119,7 @@ public class EvaluatorTest
            ";
         AssertDiagnostics(text, diagnostics);
     }
+
     [Fact]
     public void Evaluator_IFStatement_Reports_CannotConvert()
     {
@@ -125,6 +135,7 @@ public class EvaluatorTest
            ";
         AssertDiagnostics(text, diagnostics);
     }
+
     [Fact]
     public void Evaluator_WhileStatement_Reports_CannotConvert()
     {
@@ -134,36 +145,54 @@ public class EvaluatorTest
                   while [10]
                      x= 10
                 }";
-    
+
         var diagnostics = @" 
          cannot convert type  'System.Int32' to 'System.Boolean'.
            ";
         AssertDiagnostics(text, diagnostics);
     }
+
     [Fact]
-    public void Evaluator_FoeStatement_Reports_CannotConvert()
+    public void Evaluator_ForStatement_Reports_CannotConvert()
     {
         var text = @"
                 {
                   var result = 0
-                  while i =false to 10
+                  for i = [false] to 10
                      result =result + i
                 }";
 
         var diagnostics = @" 
-         cannot convert type  'System.Int32' to 'System.Boolean'.
+         cannot convert type  'System.Boolean' to 'System.Int32'.
            ";
         AssertDiagnostics(text, diagnostics);
     }
+
+
+
     [Fact]
-    public void Evaluator_Unary_Reports_Undefined()
+    public void Evaluator_BlockStatement_Reports_NotInfinateLoop()
     {
-        var text = @"[+]true";
+        var text = @"
+                    {
+                    [)][]
+                   ";
 
 
         var diagnostics = @" 
-        Unary operator '+' is not defined for type System.Boolean.
+        ERROR: Unexpected token <CloseParenthesisToken> , expected <IdentifierToken>.
+        ERROR: Unexpected token <EndOfFileToken> , expected <CloseBraceToken>.
            ";
+        AssertDiagnostics(text, diagnostics);
+    }
+
+    [Fact]
+    public void Evaluator_NameExpression_Reports_NoErrorForInsertedToken()
+    {
+        var text = @"[]";
+        var diagnostics = @"
+      ERROR: Unexpected token <EndOfFileToken> , expected <IdentifierToken>.
+       ";
         AssertDiagnostics(text, diagnostics);
     }
 
