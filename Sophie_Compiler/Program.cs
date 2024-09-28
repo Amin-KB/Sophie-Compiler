@@ -11,6 +11,7 @@ static void Run()
 {
     //1:43
     var showTree = false;
+    var showProgram = false;
     var variables = new Dictionary<VariableSymbol, object>();
     var textBuilder = new StringBuilder();
     Compilation previous = null;
@@ -35,6 +36,12 @@ static void Run()
             {
                 showTree = !showTree;
                 Console.WriteLine(showTree ? "Show Parse Tree " : "Hide Parse Tree ");
+                continue;
+            }
+            else if (input == "#showProgram")
+            {
+                showProgram = !showProgram;
+                Console.WriteLine(showTree ? "Show bound Tree " : "Hide bound Tree ");
                 continue;
             }
             else if (input == "#clr")
@@ -67,7 +74,12 @@ static void Run()
             syntaxTree.Root.WriteTo(Console.Out);
             Console.ResetColor();
         }
-
+        if (showProgram)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            compilation.EmitTree(Console.Out);
+            Console.ResetColor();
+        }
         if (!result.Diagnostics.Any())
         {
             Console.ForegroundColor = ConsoleColor.DarkMagenta;
