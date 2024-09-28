@@ -19,9 +19,9 @@ static void Run()
     {
         Console.ForegroundColor = ConsoleColor.Blue;
         if (textBuilder.Length == 0)
-            Console.Write("\u204D ");
+            Console.Write("> ");
         else
-            Console.Write("\u204B ");
+            Console.Write("| ");
         Console.ResetColor();
         var input = Console.ReadLine();
         var isBlank = string.IsNullOrEmpty(input);
