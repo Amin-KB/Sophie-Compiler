@@ -16,7 +16,9 @@ public enum BoundNodeKind
     IfStatement,
     WhileStatement,
     ForStatement,
-    
+    GotoStatement,
+    LabelStatement,
+    ConditionalGotoStatement,
     //Declarations
     VariableDeclaration,
 
