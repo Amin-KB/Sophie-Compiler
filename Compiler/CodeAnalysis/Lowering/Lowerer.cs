@@ -7,6 +7,7 @@ namespace Compiler.CodeAnalysis.Lowering;
 internal sealed class Lowerer : BoundTreeRewriter
 {
     private int _labelCount;
+
     private Lowerer()
     {
     }
@@ -14,14 +15,16 @@ internal sealed class Lowerer : BoundTreeRewriter
     public static BoundBlockStatement Lower(BoundStatement statement)
     {
         var lowerer = new Lowerer();
-        var result= lowerer.RewriteStatement(statement);
+        var result = lowerer.RewriteStatement(statement);
         return Flatten(result);
     }
+
     private LabelSymbol GenerateLabel()
     {
         var name = $"Label{++_labelCount}";
         return new LabelSymbol(name);
     }
+
     private static BoundBlockStatement Flatten(BoundStatement statement)
     {
         var builder = ImmutableArray.CreateBuilder<BoundStatement>();
@@ -46,9 +49,10 @@ internal sealed class Lowerer : BoundTreeRewriter
 
         return new BoundBlockStatement(builder.ToImmutable());
     }
+
     protected override BoundStatement RewriteIfStatement(BoundIfStatement node)
     {
-        if (node.ElseStatement==null)
+        if (node.ElseStatement == null)
         {
             // if <condition>
             //      <then>
@@ -58,13 +62,13 @@ internal sealed class Lowerer : BoundTreeRewriter
             // gotoFalse <condition> end
             // <then>
             // end:
-            
+
             var endLabel = GenerateLabel();
-            var gotoFalse=new BoundConditionalGotoStatement(endLabel,node.Condition, true);
+            var gotoFalse = new BoundConditionalGotoStatement(endLabel, node.Condition, true);
             var endLabelStatement = new BoundLabelStatement(endLabel);
-            var result= new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(
-                                                gotoFalse,node.ThanStatement,endLabelStatement));
-            
+            var result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(
+                gotoFalse, node.ThanStatement, endLabelStatement));
+
             return RewriteStatement(result);
         }
         else
@@ -82,10 +86,10 @@ internal sealed class Lowerer : BoundTreeRewriter
             // else:
             // <else>
             // end:
-            
+
             var elseLabel = GenerateLabel();
             var endLabel = GenerateLabel();
-            var gotoFalse=new BoundConditionalGotoStatement(elseLabel,node.Condition, true);
+            var gotoFalse = new BoundConditionalGotoStatement(elseLabel, node.Condition, true);
             var gotoEndStatement = new BoundGotoStatement(endLabel);
             var elseLabelStatement = new BoundLabelStatement(elseLabel);
             var endLabelStatement = new BoundLabelStatement(endLabel);
@@ -98,7 +102,7 @@ internal sealed class Lowerer : BoundTreeRewriter
                 node.ElseStatement,
                 endLabelStatement
             ));
-            
+
             return RewriteStatement(result);
         }
     }
@@ -120,11 +124,11 @@ internal sealed class Lowerer : BoundTreeRewriter
         var continueLabel = GenerateLabel();
         var checkLabel = GenerateLabel();
         var endLabel = GenerateLabel();
-     
+
         var gotoCheck = new BoundGotoStatement(checkLabel);
         var continueLabelStatement = new BoundLabelStatement(continueLabel);
         var checkLabelStatement = new BoundLabelStatement(checkLabel);
-        var gotoTrue = new BoundConditionalGotoStatement(continueLabel,node.Condition,false);
+        var gotoTrue = new BoundConditionalGotoStatement(continueLabel, node.Condition, false);
         var endLabelStatement = new BoundLabelStatement(endLabel);
 
         var result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(
@@ -142,22 +146,29 @@ internal sealed class Lowerer : BoundTreeRewriter
     {
         var variableDeclaration = new BoundVariableDeclaration(node.Variable, node.LowerBound);
         var variableExpression = new BoundVariableExpression(node.Variable);
-        
+        var upperBoundSymbol = new VariableSymbol("upperBound", true, typeof(int));
+        var upperBoundDeclaration = new BoundVariableDeclaration(upperBoundSymbol, node.UpperBound);
         var condition = new BoundBinaryExpression(
-                      variableExpression,
-                      BoundBinaryOperator.Bind(SyntaxKind.LessOrEqualToken, typeof(int), typeof(int)),
-                      node.UpperBound);
+            variableExpression,
+            BoundBinaryOperator.Bind(SyntaxKind.LessOrEqualToken, typeof(int), typeof(int)),
+            new BoundVariableExpression(upperBoundSymbol));
 
         var increment = new BoundExpressionStatement(
-                        new BoundAssignmentExpression(node.Variable,
-                        new BoundBinaryExpression(variableExpression, 
-                            BoundBinaryOperator.Bind(SyntaxKind.PlusToken, typeof(int), typeof(int)),
-                    new BoundLiteralExpression(1))));
-        
-        var whileBody=new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(node.Body,increment));
-        var whileStatement=new BoundWhileStatement(condition, whileBody);
-        var result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(variableDeclaration, whileStatement));
-        
+            new BoundAssignmentExpression(node.Variable,
+                new BoundBinaryExpression(variableExpression,
+                    BoundBinaryOperator.Bind(SyntaxKind.PlusToken, typeof(int), typeof(int)),
+                    new BoundLiteralExpression(1)
+                )
+            )
+        );
+
+        var whileBody = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(node.Body, increment));
+        var whileStatement = new BoundWhileStatement(condition, whileBody);
+        var result =
+            new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(variableDeclaration, 
+                                                                                    upperBoundDeclaration,
+                                                                                    whileStatement));
+
         return RewriteStatement(result);
     }
 }
