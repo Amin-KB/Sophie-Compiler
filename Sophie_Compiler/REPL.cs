@@ -31,7 +31,7 @@ internal abstract class REPL
                 EvaluateMetaCommand(text);
             else
                 EvaluateSubmission(text);
-            
+
             _submissionHistory.Add(text);
             _submissionHistoryIndex = 0;
         }
@@ -94,7 +94,7 @@ internal abstract class REPL
     {
         _done = false;
         var document = new ObservableCollection<string>() { "" };
-        var view = new SubmissionView(document);
+        var view = new SubmissionView(RenderLine, document);
 
         while (!_done)
         {
@@ -102,10 +102,18 @@ internal abstract class REPL
             HandleKey(key, document, view);
         }
 
+        view.CurrentLineIndex = document.Count - 1;
+        view.CurrentCharacter = document[view.CurrentLineIndex].Length;
         Console.WriteLine();
 
 
         return string.Join(Environment.NewLine, document);
+    }
+
+
+    protected virtual void RenderLine(string line)
+    {
+        Console.Write(line);
     }
 
     private void HandleKey(ConsoleKeyInfo key, ObservableCollection<string> document, SubmissionView view)
@@ -243,7 +251,16 @@ internal abstract class REPL
         var start = view.CurrentCharacter;
 
         if (start == 0)
+        {
+            var currentLine = document[view.CurrentLineIndex];
+            var previousLine= document[view.CurrentLineIndex - 1];
+            document.RemoveAt(view.CurrentLineIndex);
+            view.CurrentLineIndex--;
+            document[view.CurrentLineIndex] = previousLine + currentLine;
+            view.CurrentCharacter = previousLine.Length;
             return;
+        }
+           
         var index = view.CurrentLineIndex;
         var line = document[index];
         var before = line.Substring(0, start - 1);
@@ -254,7 +271,7 @@ internal abstract class REPL
 
     private void HandleControlEnter(ObservableCollection<string> document, SubmissionView view)
     {
-        _done = true;
+        InsertLine(document,view);
     }
 
     private void HandleUpArrow(ObservableCollection<string> document, SubmissionView view)
@@ -285,9 +302,18 @@ internal abstract class REPL
             return;
         }
 
-        document.Add(string.Empty);
+        InsertLine(document, view);
+    }
+
+    private static void InsertLine(ObservableCollection<string> document, SubmissionView view)
+    {
+        var remainder=document[view.CurrentLineIndex].Substring(view.CurrentCharacter);
+        document[view.CurrentLineIndex]=document[view.CurrentLineIndex].Substring(view.CurrentCharacter);
+        var lineIndex = view.CurrentLineIndex + 1;
+        document.Insert(lineIndex , remainder);
+        
         view.CurrentCharacter = 0;
-        view.CurrentLineIndex = document.Count - 1;
+        view.CurrentLineIndex = lineIndex ;
     }
 
 
@@ -307,6 +333,7 @@ internal abstract class REPL
 
     private sealed class SubmissionView
     {
+        private readonly Action<string> _lineRenderer;
         private readonly ObservableCollection<string> _submissionDocument;
         private readonly int _cursorTop;
         private int _renderedLineCount;
@@ -340,8 +367,9 @@ internal abstract class REPL
             }
         }
 
-        public SubmissionView(ObservableCollection<string> submissionDocument)
+        public SubmissionView(Action<string> lineRenderer, ObservableCollection<string> submissionDocument)
         {
+            _lineRenderer = lineRenderer;
             _submissionDocument = submissionDocument;
             _submissionDocument.CollectionChanged += SubmissionDocumentChanged;
             _cursorTop = Console.CursorTop;
@@ -368,18 +396,21 @@ internal abstract class REPL
                 else
                     Console.Write("| ");
                 Console.ResetColor();
-                Console.Write(line);
+                _lineRenderer(line);
+                // Console.Write(line);
                 var remainingSpaces = new string(' ', Console.WindowWidth - line.Length);
                 Console.WriteLine(remainingSpaces);
                 lineCount++;
             }
 
             var numberOfBlankLines = _renderedLineCount - lineCount;
-            if (numberOfBlankLines-- > 0)
+
+            if (numberOfBlankLines > 0)
             {
                 var blankLine = new string(' ', Console.WindowWidth);
-                while (numberOfBlankLines > 0)
+                for (int i = 0; i < numberOfBlankLines; i++)
                 {
+                    Console.SetCursorPosition(0, _cursorTop + lineCount + i);
                     Console.WriteLine(blankLine);
                 }
             }
@@ -388,6 +419,7 @@ internal abstract class REPL
             Console.CursorVisible = true;
             UpdateCursorPosition();
         }
+
 
         private void UpdateCursorPosition()
         {
