@@ -103,7 +103,7 @@ internal sealed class SophieREPL : REPL
     protected override bool IsCompleteSubmission(string text)
     {
         if (string.IsNullOrEmpty(text))
-            return false;
+            return true;
 
         var syntaxTree = SyntaxTree.Parse(text);
 
