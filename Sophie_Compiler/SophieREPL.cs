@@ -100,10 +100,29 @@ internal sealed class SophieREPL : REPL
         return false;
     }
 
+    protected override void RenderLine(string line)
+    {
+        var tokens = SyntaxTree.ParseToken(line);
+       
+        foreach (var token in tokens)
+        {
+            var isKeyword = token.SyntaxKind.ToString().EndsWith("Keyword");
+            var isNumber =token.SyntaxKind== SyntaxKind.NumberToken;
+            if (isKeyword)
+                Console.ForegroundColor = ConsoleColor.Blue;
+            else if(!isNumber)
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+            
+           
+            Console.Write(token.Text);
+            Console.ResetColor();
+        }
+    }
+
     protected override bool IsCompleteSubmission(string text)
     {
         if (string.IsNullOrEmpty(text))
-            return false;
+            return true;
 
         var syntaxTree = SyntaxTree.Parse(text);
 
