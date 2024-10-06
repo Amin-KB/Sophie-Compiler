@@ -108,9 +108,14 @@ internal sealed class SophieREPL : REPL
         {
             var isKeyword = token.SyntaxKind.ToString().EndsWith("Keyword");
             var isNumber =token.SyntaxKind== SyntaxKind.NumberToken;
+            var isIdentifier =token.SyntaxKind== SyntaxKind.IdentifierToken;
             if (isKeyword)
                 Console.ForegroundColor = ConsoleColor.Blue;
-            else if(!isNumber)
+            else if(isIdentifier)
+                Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            else if(isNumber)
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+            else 
                 Console.ForegroundColor = ConsoleColor.DarkGray;
             
            
