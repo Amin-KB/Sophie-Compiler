@@ -195,6 +195,8 @@ internal abstract class REPL
 
     private void UpdateDocumentFromHistory(ObservableCollection<string> document, SubmissionView view)
     {
+        if (_submissionHistoryIndex == 0)
+            return;
         document.Clear();
         var historyItem = _submissionHistory[_submissionHistoryIndex];
         var lines = historyItem.Split(Environment.NewLine);
@@ -238,7 +240,15 @@ internal abstract class REPL
         var line = document[index];
         var start = view.CurrentCharacter;
         if (start >= line.Length)
+        {
+            if (view.CurrentLineIndex == document.Count - 1)
+                return;
+
+            var nextLine = document[view.CurrentLineIndex + 1];
+            document[view.CurrentLineIndex] += nextLine;
+            document.RemoveAt(view.CurrentLineIndex + 1);
             return;
+        }
 
 
         var before = line.Substring(0, start);
@@ -253,14 +263,13 @@ internal abstract class REPL
         if (start == 0)
         {
             var currentLine = document[view.CurrentLineIndex];
-            var previousLine= document[view.CurrentLineIndex - 1];
+            var previousLine = document[view.CurrentLineIndex - 1];
             document.RemoveAt(view.CurrentLineIndex);
             view.CurrentLineIndex--;
             document[view.CurrentLineIndex] = previousLine + currentLine;
             view.CurrentCharacter = previousLine.Length;
-            return;
         }
-           
+
         var index = view.CurrentLineIndex;
         var line = document[index];
         var before = line.Substring(0, start - 1);
@@ -271,7 +280,7 @@ internal abstract class REPL
 
     private void HandleControlEnter(ObservableCollection<string> document, SubmissionView view)
     {
-        InsertLine(document,view);
+        InsertLine(document, view);
     }
 
     private void HandleUpArrow(ObservableCollection<string> document, SubmissionView view)
@@ -307,13 +316,13 @@ internal abstract class REPL
 
     private static void InsertLine(ObservableCollection<string> document, SubmissionView view)
     {
-        var remainder=document[view.CurrentLineIndex].Substring(view.CurrentCharacter);
-        document[view.CurrentLineIndex]=document[view.CurrentLineIndex].Substring(view.CurrentCharacter);
+        var remainder = document[view.CurrentLineIndex].Substring(view.CurrentCharacter);
+        document[view.CurrentLineIndex] = document[view.CurrentLineIndex].Substring(0, view.CurrentCharacter);
         var lineIndex = view.CurrentLineIndex + 1;
-        document.Insert(lineIndex , remainder);
-        
+        document.Insert(lineIndex, remainder);
+
         view.CurrentCharacter = 0;
-        view.CurrentLineIndex = lineIndex ;
+        view.CurrentLineIndex = lineIndex;
     }
 
 

@@ -16,7 +16,13 @@ public abstract class SyntaxNode
             return TextSpan.FromBounds(first.Start, last.End);
         }
     }
+    public  SyntaxToken GetLastToken()
+    {
+        if (this is SyntaxToken token)
+            return token;
 
+        return GetChildren().Last().GetLastToken();
+    }
     public IEnumerable<SyntaxNode> GetChildren()
     {
         var properties = GetType().GetProperties(System.Reflection.BindingFlags.Public | BindingFlags.Instance);

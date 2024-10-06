@@ -126,9 +126,11 @@ internal sealed class SophieREPL : REPL
 
         var syntaxTree = SyntaxTree.Parse(text);
 
-        if (syntaxTree.Diagnostics.Any())
+        if (syntaxTree.Root.Statement.GetLastToken().IsMissing)
             return false;
 
         return true;
     }
+
+   
 }
