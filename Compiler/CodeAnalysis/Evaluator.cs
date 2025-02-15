@@ -103,7 +103,10 @@ internal sealed class Evaluator
         switch (b.Op.Kind)
         {
             case BoundBinaryOperatorKind.Addition:
-                return (int)left + (int)right;
+                if (b.Type == TypeSymbol.Int)
+                    return (int)left + (int)right;
+                else
+                    return (string)left + (string)right;
             case BoundBinaryOperatorKind.Subtraction:
                 return (int)left - (int)right;
             case BoundBinaryOperatorKind.Multiplication:
@@ -159,7 +162,7 @@ internal sealed class Evaluator
         else if (u.Op.Kind == BoundUnaryOperatorKind.LogicalNegation)
             return !(bool)operand;
         else if (u.Op.Kind == BoundUnaryOperatorKind.OnesComplement)
-            return ~ (int)operand;
+            return ~(int)operand;
         else
             throw new Exception($"Unexpected binary operator {u.Op.Kind}");
     }
