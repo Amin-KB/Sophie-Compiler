@@ -205,19 +205,26 @@ internal sealed class Parser
             case SyntaxKind.FalseKeyword:
                 return ParseBooleanLiteral();
             case SyntaxKind.NumberToken:
-                return ParseNumberExpression();
+                return ParseNumberLiteral();
+
+            case SyntaxKind.StringToken:
+                return ParseStringLiteral();
             case SyntaxKind.IdentifierToken:
             default:
                 return ParseNameToken();
         }
     }
 
-    private ExpressionSyntax ParseNumberExpression()
+    private ExpressionSyntax ParseNumberLiteral()
     {
         var numberToken = MatchToken(SyntaxKind.NumberToken);
         return new LiteralExpressionSyntax(numberToken);
     }
-
+    private ExpressionSyntax ParseStringLiteral()
+    {
+        var stringToken = MatchToken(SyntaxKind.StringToken);
+        return new LiteralExpressionSyntax(stringToken);
+    }
     private ExpressionSyntax ParseParenthesizedExpression()
     {
         var left = MatchToken(SyntaxKind.OpenParenthesisToken);

@@ -12,7 +12,7 @@ public class SyntaxFactTest
         if(text==null)
             return;
 
-        var tokens= SyntaxTree.ParseToken(text);
+        var tokens= SyntaxTree.ParseTokens(text);
         var token = Assert.Single(tokens);
         Assert.Equal(kind,token.SyntaxKind);
         Assert.Equal(text,token.Text);

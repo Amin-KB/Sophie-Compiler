@@ -9,7 +9,7 @@ internal sealed class SophieREPL : REPL
     private Compilation _previous;
     private bool _showTree;
     private bool _showProgram;
-    private readonly Dictionary<VariableSymbol, object> _variables=new Dictionary<VariableSymbol, object>();
+    private readonly Dictionary<VariableSymbol, object> _variables = new Dictionary<VariableSymbol, object>();
 
     protected override void EvaluateMetaCommand(string input)
     {
@@ -102,23 +102,23 @@ internal sealed class SophieREPL : REPL
 
     protected override void RenderLine(string line)
     {
-        var tokens = SyntaxTree.ParseToken(line);
-       
+        var tokens = SyntaxTree.ParseTokens(line);
+
         foreach (var token in tokens)
         {
             var isKeyword = token.SyntaxKind.ToString().EndsWith("Keyword");
-            var isNumber =token.SyntaxKind== SyntaxKind.NumberToken;
-            var isIdentifier =token.SyntaxKind== SyntaxKind.IdentifierToken;
+            var isNumber = token.SyntaxKind == SyntaxKind.NumberToken;
+            var isIdentifier = token.SyntaxKind == SyntaxKind.IdentifierToken;
             if (isKeyword)
                 Console.ForegroundColor = ConsoleColor.Blue;
-            else if(isIdentifier)
+            else if (isIdentifier)
                 Console.ForegroundColor = ConsoleColor.DarkMagenta;
-            else if(isNumber)
+            else if (isNumber)
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
-            else 
+            else
                 Console.ForegroundColor = ConsoleColor.DarkGray;
-            
-           
+
+
             Console.Write(token.Text);
             Console.ResetColor();
         }
@@ -127,6 +127,12 @@ internal sealed class SophieREPL : REPL
     protected override bool IsCompleteSubmission(string text)
     {
         if (string.IsNullOrEmpty(text))
+            return true;
+        var lastTwoLinesAreBlank = text.Split(Environment.NewLine).Reverse()
+                                     .TakeWhile(s => string.IsNullOrEmpty(s))
+                                     .Take(2)
+                                     .Count() == 2;
+        if (lastTwoLinesAreBlank)
             return true;
 
         var syntaxTree = SyntaxTree.Parse(text);
@@ -137,5 +143,5 @@ internal sealed class SophieREPL : REPL
         return true;
     }
 
-   
+
 }

@@ -1,4 +1,5 @@
-﻿using Compiler.CodeAnalysis.Text;
+﻿using System.Text;
+using Compiler.CodeAnalysis.Text;
 
 namespace Compiler.CodeAnalysis.Syntax;
 
@@ -158,6 +159,9 @@ internal sealed class Lexer
                     _position++;
                 }
                 break;
+            case '"':
+                ReadString();
+                break;
             case '0':
             case '1':
             case '2':
@@ -200,6 +204,45 @@ internal sealed class Lexer
         if (text == null)
             text = _text.ToString(_start, length);
         return new SyntaxToken(_kind, _start, text, _value);
+    }
+
+    private void ReadString()
+    {
+        _position++;
+        var stringBuilder = new StringBuilder();
+        var done = false;
+        while (!done)
+        {
+            switch (Current)
+            {
+                case '\0':
+                case '\r':
+                case '\n':
+                    var span = new TextSpan(_start, 1);
+                    _errorDiagnostics.ReportUnterminatedString(span);
+                    done = true;
+                    break;
+                case '"':
+                    if (LookAhead == '"')
+                    {
+                        stringBuilder.Append(Current);
+                        _position+=2;
+                    }
+                    else
+                    {
+                        _position++;
+                        done = true;
+                    }
+                       
+                    break;
+                default:
+                    stringBuilder.Append(Current);
+                    _position++;
+                    break;
+            }
+        }
+        _kind = SyntaxKind.StringToken;
+        _value = stringBuilder.ToString();
     }
 
     private void ReadIdentifierOrKeyword()

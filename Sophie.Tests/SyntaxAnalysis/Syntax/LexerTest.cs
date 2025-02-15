@@ -1,4 +1,6 @@
 ﻿using Compiler.CodeAnalysis.Syntax;
+using Compiler.CodeAnalysis.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Sophie.Tests.SyntaxAnalysis.Syntax;
 
@@ -6,29 +8,45 @@ public class LexerTest
 {
 
     [Fact]
- 
+     public void Lexer_Lexes_UnterminatedString()
+    {
+        var text = "\"text";
+        var tokens = SyntaxTree.ParseTokens(text,out var diagnostics);
+        var token=Assert.Single(tokens);
+        Assert.Equal(SyntaxKind.StringToken, token.SyntaxKind);
+        Assert.Equal(text, token.Text);
+
+
+        var diagnostic=Assert.Single(diagnostics);
+        Assert.Equal(new TextSpan(0,1),diagnostic.TextSpan);
+        Assert.Equal($"unterminated string literal.", diagnostic.Message);
+
+    }
+
+    [Fact]
+
     public void Lexer_Tests_AllToken()
     {
         var tokenKinds = Enum.GetValues(typeof(SyntaxKind))
                          .Cast<SyntaxKind>()
-                         .Where(k=>k.ToString().EndsWith("Keyword") ||
+                         .Where(k => k.ToString().EndsWith("Keyword") ||
                                     k.ToString().EndsWith("Token"))
                           .ToList();
 
-        var testedTokenKinds=GetTokens().Concat(GetSeparators()).Select(t=>t.kind);
-        var untestedToknKinds=new SortedSet<SyntaxKind>(tokenKinds);
+        var testedTokenKinds = GetTokens().Concat(GetSeparators()).Select(t => t.kind);
+        var untestedToknKinds = new SortedSet<SyntaxKind>(tokenKinds);
         untestedToknKinds.Remove(SyntaxKind.BadToken);
         untestedToknKinds.Remove(SyntaxKind.EndOfFileToken);
         untestedToknKinds.ExceptWith(testedTokenKinds);
         Assert.Empty(untestedToknKinds);
-    
+
     }
 
     [Theory]
     [MemberData(nameof(GetTokenData))]
     public void Lexer_Lex_Token(SyntaxKind kind, string text)
     {
-        var tokens = SyntaxTree.ParseToken(text);
+        var tokens = SyntaxTree.ParseTokens(text);
 
         var token = Assert.Single(tokens);
         Assert.Equal(kind, token.SyntaxKind);
@@ -41,14 +59,14 @@ public class LexerTest
         SyntaxKind bKind, string bText)
     {
         var text = aText + bText;
-        var tokens = SyntaxTree.ParseToken(text).ToArray();
+        var tokens = SyntaxTree.ParseTokens(text).ToArray();
 
         Assert.Equal(2, tokens.Length);
-        
-        Assert.Equal(aKind,tokens[0].SyntaxKind );
-        Assert.Equal(aText,tokens[0].Text );
-        Assert.Equal(bKind,tokens[1].SyntaxKind);
-        Assert.Equal(bText,tokens[1].Text );
+
+        Assert.Equal(aKind, tokens[0].SyntaxKind);
+        Assert.Equal(aText, tokens[0].Text);
+        Assert.Equal(bKind, tokens[1].SyntaxKind);
+        Assert.Equal(bText, tokens[1].Text);
     }
 
     [Theory]
@@ -58,7 +76,7 @@ public class LexerTest
         SyntaxKind bKind, string bText)
     {
         var text = aText + separatorText + bText;
-        var tokens = SyntaxTree.ParseToken(text).ToArray();
+        var tokens = SyntaxTree.ParseTokens(text).ToArray();
 
         Assert.Equal(3, tokens.Length);
         Assert.Equal(tokens[0].SyntaxKind, aKind);
@@ -68,7 +86,7 @@ public class LexerTest
         Assert.Equal(tokens[2].SyntaxKind, bKind);
         Assert.Equal(tokens[2].Text, bText);
 
-   
+
     }
 
     public static IEnumerable<object[]> GetTokenData()
@@ -127,6 +145,8 @@ public class LexerTest
             return true;
         if (aKind == SyntaxKind.EqualToken && bKind == SyntaxKind.EqualToken)
             return true;
+        if (aKind == SyntaxKind.StringToken && bKind == SyntaxKind.StringToken)
+            return true;
         if (aKind == SyntaxKind.EqualToken && bKind == SyntaxKind.EqualEqualToken)
             return true;
         if (aKind == SyntaxKind.LessToken && bKind == SyntaxKind.EqualToken)
@@ -150,36 +170,19 @@ public class LexerTest
 
     public static IEnumerable<(SyntaxKind kind, string text)> GetTokens()
     {
-        var fixedTokens=Enum.GetValues(typeof(SyntaxKind))
+        var fixedTokens = Enum.GetValues(typeof(SyntaxKind))
                             .Cast<SyntaxKind>()
-                            .Select(k=>(kind:k,text:SyntaxFact.GetText(k)))
-                            .Where(t=>t.text!=null);
-        var dynamicTokens= new[]
+                            .Select(k => (kind: k, text: SyntaxFact.GetText(k)))
+                            .Where(t => t.text != null);
+        var dynamicTokens = new[]
         {
-                (SyntaxKind.NumberToken, "1"),
+            (SyntaxKind.NumberToken, "1"),
             (SyntaxKind.NumberToken, "123"),
-        
-                (SyntaxKind.IdentifierToken, "a"),
-
+            (SyntaxKind.IdentifierToken, "a"),
             (SyntaxKind.IdentifierToken, "abc"),
-            //(SyntaxKind.PlusToken, "+"),
-            //(SyntaxKind.MinusToken, "-"),
-            //(SyntaxKind.StarToken, "*"),
-            //(SyntaxKind.SlashToken, "/"),
+            (SyntaxKind.StringToken, "\"test\""),
+            (SyntaxKind.StringToken, "\"te\"\"st\""),
 
-            //(SyntaxKind.BangToken, "!"),
-            //(SyntaxKind.AmpersandAmperSandToken, "&&"),
-            //(SyntaxKind.PipePipeToken, "||"),
-
-            //(SyntaxKind.EqualToken, "="),
-            //(SyntaxKind.EqualEqualToken, "=="),
-            //(SyntaxKind.BangEqualToken, "!="),
-            //(SyntaxKind.OpenParenthesisToken, "("),
-            //(SyntaxKind.CloseParenthesisToken, ")"),
-
-        
-            //(SyntaxKind.TrueKeyword, "true"),
-            //(SyntaxKind.FalseKeyword, "false"),
         };
         return fixedTokens.Concat(dynamicTokens);
     }

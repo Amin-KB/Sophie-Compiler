@@ -30,6 +30,7 @@ public enum SyntaxKind
     GreaterToken,
     TildeToken,
     HatToken,
+    StringToken,
     //Expressions
     LiteralExpression,
     BinaryExpression,
@@ -64,5 +65,5 @@ public enum SyntaxKind
     VariableDeclaration,
 
 
-   
+  
 }
