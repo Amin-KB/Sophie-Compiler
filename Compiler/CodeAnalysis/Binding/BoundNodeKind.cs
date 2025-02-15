@@ -21,7 +21,5 @@ public enum BoundNodeKind
     ConditionalGotoStatement,
     //Declarations
     VariableDeclaration,
-
-
-    
+    ErrorExpression,
 }

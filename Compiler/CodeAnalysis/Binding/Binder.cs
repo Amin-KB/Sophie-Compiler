@@ -75,17 +75,17 @@ internal sealed class Binder
 
     private BoundStatement BindForStatement(ForStatementSyntax syntax)
     {
-        var lowerBound = BindExpression (syntax.LowerBound, TypeSymbol.Int);
-        var upperBound = BindExpression (syntax.UpperBound, TypeSymbol.Int);
+        var lowerBound = BindExpression(syntax.LowerBound, TypeSymbol.Int);
+        var upperBound = BindExpression(syntax.UpperBound, TypeSymbol.Int);
         _scope = new BoundScope(_scope);
-        var name = syntax. Identifier.Text;
+        var name = syntax.Identifier.Text;
         var variable = new VariableSymbol(name, true, TypeSymbol.Int);
         if (!_scope.TryDeclareVariable(variable))
-            _diagnostics.ReportVariableAlreadyDeclared (syntax. Identifier. Span, name);
-        var body = BindStatement (syntax. Body);
+            _diagnostics.ReportVariableAlreadyDeclared(syntax.Identifier.Span, name);
+        var body = BindStatement(syntax.Body);
         _scope = _scope.Parent;
-        
-        return new BoundForStatement(variable,lowerBound, upperBound,   body);
+
+        return new BoundForStatement(variable, lowerBound, upperBound, body);
     }
 
     private BoundStatement BindWhileStatement(WhileStatementSyntax syntax)
@@ -169,12 +169,12 @@ internal sealed class Binder
         var name = syntax.IdentifierToken.Text;
         if (string.IsNullOrEmpty(name))
         {
-            return new BoundLiteralExpression(0);
+            return new BoundErrorExpression();
         }
         if (!_scope.TryLookupVariable(name, out var variable))
         {
             _diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
-            return new BoundLiteralExpression(0);
+            return new BoundErrorExpression();
         }
 
         return new BoundVariableExpression(variable);
@@ -184,7 +184,7 @@ internal sealed class Binder
     {
         var condition = BindExpression(syntax.Condition, TypeSymbol.Bool);
         var statements = BindStatement(syntax.ThanStatement);
-        var elseStatement= syntax.ElseClause == null
+        var elseStatement = syntax.ElseClause == null
                                                ? null
                                                : BindStatement(syntax.ElseClause.ElseStatement);
         return new BoundIfStatement(condition, statements, elseStatement);
@@ -221,12 +221,16 @@ internal sealed class Binder
     private BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
     {
         var boundOperand = BindExpression(syntax.Operand);
+
+        if (boundOperand.Type == TypeSymbol.Error)
+            return new BoundErrorExpression();
+
         var boundOperator = BoundUnaryOperator.Bind(syntax.OperatorToken.SyntaxKind, boundOperand.Type);
         if (boundOperator == null)
         {
             _diagnostics.ReportUndefinedUnaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text,
                 boundOperand.Type);
-            return boundOperand;
+            return new BoundErrorExpression();
         }
 
         return new BoundUnaryExpression(boundOperator, boundOperand);
@@ -236,13 +240,18 @@ internal sealed class Binder
     {
         var boundLeft = BindExpression(syntax.Left);
         var boundRight = BindExpression(syntax.Right);
+
+        if (boundLeft.Type == TypeSymbol.Error || boundRight.Type == TypeSymbol.Error)
+            return new BoundErrorExpression();
+
+
         var boundOperator =
             BoundBinaryOperator.Bind(syntax.OperatorToken.SyntaxKind, boundLeft.Type, boundRight.Type);
         if (boundOperator == null)
         {
             _diagnostics.ReportUndefinedBinaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text,
                 boundLeft.Type, boundRight.Type);
-            return boundLeft;
+            return new BoundErrorExpression();
         }
 
         return new BoundBinaryExpression(boundLeft, boundOperator, boundRight);

@@ -2,7 +2,6 @@
 using Compiler.CodeAnalysis.Syntax;
 
 namespace Compiler.CodeAnalysis.Binding;
-
 internal sealed class BoundAssignmentExpression : BoundExpression
 {
     public BoundAssignmentExpression(VariableSymbol variable, BoundExpression boundExpression)
