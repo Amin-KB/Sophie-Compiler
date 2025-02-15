@@ -1,4 +1,5 @@
 ﻿using Compiler.CodeAnalysis;
+using Compiler.CodeAnalysis.Symbols;
 using Compiler.CodeAnalysis.Syntax;
 
 namespace Sophie.Tests.SyntaxAnalysis;

@@ -1,3 +1,5 @@
+using Compiler.CodeAnalysis.Symbols;
+
 namespace Compiler.CodeAnalysis.Binding;
 
 internal sealed class BoundForStatement : BoundStatement

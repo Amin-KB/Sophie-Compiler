@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Compiler.CodeAnalysis.Binding;
+using Compiler.CodeAnalysis.Symbols;
 using Compiler.CodeAnalysis.Syntax;
 
 namespace Compiler.CodeAnalysis.Lowering;
@@ -19,10 +20,10 @@ internal sealed class Lowerer : BoundTreeRewriter
         return Flatten(result);
     }
 
-    private LabelSymbol GenerateLabel()
+    private BoundLabel GenerateLabel()
     {
         var name = $"Label{++_labelCount}";
-        return new LabelSymbol(name);
+        return new BoundLabel(name);
     }
 
     private static BoundBlockStatement Flatten(BoundStatement statement)
