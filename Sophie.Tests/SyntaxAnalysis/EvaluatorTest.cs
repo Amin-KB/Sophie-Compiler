@@ -117,7 +117,7 @@ public class EvaluatorTest
 
 
         var diagnostics = @" 
-         cannot convert type  'System.Boolean' to 'System.Int32'.
+         cannot convert type  'bool' to 'int'.
            ";
         AssertDiagnostics(text, diagnostics);
     }
@@ -133,7 +133,7 @@ public class EvaluatorTest
                 }";
 
         var diagnostics = @" 
-         cannot convert type  'System.Int32' to 'System.Boolean'.
+         cannot convert type  'int' to 'bool'.
            ";
         AssertDiagnostics(text, diagnostics);
     }
@@ -149,7 +149,7 @@ public class EvaluatorTest
                 }";
 
         var diagnostics = @" 
-         cannot convert type  'System.Int32' to 'System.Boolean'.
+         cannot convert type  'int' to 'bool'.
            ";
         AssertDiagnostics(text, diagnostics);
     }
@@ -165,7 +165,7 @@ public class EvaluatorTest
                 }";
 
         var diagnostics = @" 
-         cannot convert type  'System.Boolean' to 'System.Int32'.
+         cannot convert type  'bool' to 'int'.
            ";
         AssertDiagnostics(text, diagnostics);
     }
@@ -205,7 +205,7 @@ public class EvaluatorTest
 
 
         var diagnostics = @" 
-        Binary operator '+' is not defined for type System.Int32 and System.Boolean.
+        Binary operator '+' is not defined for type int and bool.
            ";
         AssertDiagnostics(text, diagnostics);
     }

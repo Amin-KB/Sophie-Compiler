@@ -6,7 +6,10 @@ public abstract class Symbol
     {
         Name = name;
     }
-
-    public string Name { get; }
     public abstract SymbolKind SymbolKind { get; }
+    public string Name { get; }
+
+    public override string ToString() => Name;
+  
+
 }

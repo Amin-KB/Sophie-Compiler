@@ -3,11 +3,11 @@ public sealed class VariableSymbol:Symbol
 {
     public override SymbolKind SymbolKind => SymbolKind.Variable;
     public bool IsReadOnly { get; }
-    public Type Type { get; }
+    public TypeSymbol Type { get; }
 
     public override string ToString() => Name;
     
-    public VariableSymbol(string name, bool isReadOnly, Type type):base(name) 
+    public VariableSymbol(string name, bool isReadOnly, TypeSymbol type):base(name) 
     {
       
         IsReadOnly = isReadOnly;

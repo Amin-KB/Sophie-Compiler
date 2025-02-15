@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Compiler.CodeAnalysis.Symbols;
 using Compiler.CodeAnalysis.Syntax;
 using Compiler.CodeAnalysis.Text;
 
@@ -20,7 +21,7 @@ internal sealed class DiagnosticBag : IEnumerable<Diagnostic>
     IEnumerator IEnumerable.GetEnumerator()
         => GetEnumerator();
 
-    public void ReportInvalidNumber(TextSpan textSpan, string text, Type type)
+    public void ReportInvalidNumber(TextSpan textSpan, string text, TypeSymbol type)
     {
         var message = $"The Number {text} is not valid {type}";
         Report(textSpan,text);
@@ -46,13 +47,13 @@ internal sealed class DiagnosticBag : IEnumerable<Diagnostic>
         Report(span,message);
     }
 
-    public void ReportUndefinedUnaryOperator(TextSpan span, string operatorText, Type operandType)
+    public void ReportUndefinedUnaryOperator(TextSpan span, string operatorText, TypeSymbol operandType)
     {
         var message = $"Unary operator '{operatorText}' is not defined for type {operandType}.";
         Report(span,message);
     }
 
-    public void ReportUndefinedBinaryOperator(TextSpan span, string name, Type boundLeftType, Type boundRightType)
+    public void ReportUndefinedBinaryOperator(TextSpan span, string name, TypeSymbol boundLeftType, TypeSymbol boundRightType)
     {
         var message =
             $"Binary operator '{name}' is not defined for type {boundLeftType} and {boundRightType}.";
@@ -66,7 +67,7 @@ internal sealed class DiagnosticBag : IEnumerable<Diagnostic>
         Report(span,message);
     }
     
-    public void ReportCannotConvert(TextSpan span, Type fromType, Type toType)
+    public void ReportCannotConvert(TextSpan span, TypeSymbol fromType, TypeSymbol toType)
     {
         var message =
             $"cannot convert type  '{fromType}' to '{toType}'.";
