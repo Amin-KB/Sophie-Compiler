@@ -1,14 +1,15 @@
 ﻿namespace Compiler.CodeAnalysis.Symbols;
-
-public sealed class VariableSymbol
+public sealed class VariableSymbol:Symbol
 {
-    public string Name { get; }
+    public override SymbolKind SymbolKind => SymbolKind.Variable;
     public bool IsReadOnly { get; }
     public Type Type { get; }
 
-    public VariableSymbol(string name, bool isReadOnly, Type type)
+    public override string ToString() => Name;
+    
+    public VariableSymbol(string name, bool isReadOnly, Type type):base(name) 
     {
-        Name = name;
+      
         IsReadOnly = isReadOnly;
         Type = type;
     }
