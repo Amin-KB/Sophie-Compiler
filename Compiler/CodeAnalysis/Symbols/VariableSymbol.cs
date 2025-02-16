@@ -1,5 +1,5 @@
 ﻿namespace Compiler.CodeAnalysis.Symbols;
-public sealed class VariableSymbol:Symbol
+public  class VariableSymbol:Symbol
 {
     public override SymbolKind SymbolKind => SymbolKind.Variable;
     public bool IsReadOnly { get; }

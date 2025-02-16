@@ -4,5 +4,7 @@ public enum SymbolKind
 {
     Variable,
     Type,
-    Error
+    Error,
+    Function,
+    Parameter
 }

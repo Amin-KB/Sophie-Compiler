@@ -31,6 +31,7 @@ public enum SyntaxKind
     TildeToken,
     HatToken,
     StringToken,
+    CommaToken,
     //Expressions
     LiteralExpression,
     BinaryExpression,
@@ -38,7 +39,7 @@ public enum SyntaxKind
     UnaryExpression,
     NameExpression,
     AssignmentExpression,
-    
+    CallExpression,
     //Keywords
     TrueKeyword,
     FalseKeyword,
@@ -63,7 +64,6 @@ public enum SyntaxKind
     ForStatement,
     //Declarations
     VariableDeclaration,
-
-
   
+   
 }

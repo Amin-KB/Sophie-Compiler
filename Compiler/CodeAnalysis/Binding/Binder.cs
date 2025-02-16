@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Formats.Asn1;
 using System.Security.Cryptography.X509Certificates;
+using System.Xml.Linq;
 using Compiler.CodeAnalysis.Symbols;
 using Compiler.CodeAnalysis.Syntax;
 
@@ -151,9 +152,49 @@ internal sealed class Binder
                 return BindUnaryExpression((UnaryExpressionSyntax)syntax);
             case SyntaxKind.BinaryExpression:
                 return BindBinaryExpression((BinaryExpressionSyntax)syntax);
+            case SyntaxKind.CallExpression:
+                return BindCallExpression((CallExpressionSyntax)syntax);
             default:
                 throw new Exception($"Unexpected syntax {syntax.SyntaxKind}");
         }
+    }
+
+    private BoundExpression BindCallExpression(CallExpressionSyntax syntax)
+    {
+
+        var boundArguments=ImmutableArray.CreateBuilder<BoundExpression>();
+
+        foreach (var argument in syntax.Arguments)
+        {
+            var boundArgument = BindExpression(argument);
+            boundArguments.Add(boundArgument);
+        }
+        var functions = BuiltinFunctions.GetAll();
+
+        var function = functions.SingleOrDefault(f => f.Name == syntax.Identifier.Text);
+        if(function == null)
+        {
+            _diagnostics.ReportUndefinedFunction(syntax.Identifier.Span, syntax.Identifier.Text);
+            return new BoundErrorExpression();
+        }
+
+        if(syntax.Arguments.Count != function.Parameter.Length)
+        {
+            _diagnostics.ReportWrongArgumentCount(syntax.Span,function.Name, function.Parameter.Length, syntax.Arguments.Count);
+        }
+    
+        for( var i = 0; 1 < syntax.Arguments.Count; i++)
+        {
+            var argument = boundArguments[i];
+            var parameter= function.Parameter[i];
+
+            if(argument.Type != parameter.Type)
+            {
+                _diagnostics.ReportWrongArgumentType(syntax.Span, parameter.Name, parameter.Name, parameter.Type,argument.Type);
+                return new BoundErrorExpression();
+            }
+        }
+        return new BoundCallExpression(function, boundArguments.ToImmutable());
     }
 
     private BoundExpression BindParenthesizedExpression(ParenthesizedExpressionSyntax syntax)

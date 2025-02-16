@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Xml.Linq;
 using Compiler.CodeAnalysis.Symbols;
 using Compiler.CodeAnalysis.Syntax;
 using Compiler.CodeAnalysis.Text;
@@ -93,5 +94,26 @@ internal sealed class DiagnosticBag : IEnumerable<Diagnostic>
         var message =
             $"unterminated string literal.";
         Report(span,message);
+    }
+
+    public void ReportUndefinedFunction(TextSpan span, string name)
+    {
+        var message =
+          $"Function '{name}' does not exist.";
+        Report(span, message);
+    }
+
+    public void ReportWrongArgumentCount(TextSpan span, string name,int expectedCount, int actualCount)
+    {
+        var message =
+          $"Function '{name}' requires {expectedCount} arguments but given {actualCount}";
+        Report(span, message);
+    }
+
+    public void ReportWrongArgumentType(TextSpan span, string name, string parameterName, TypeSymbol expectedType, TypeSymbol actualType)
+    {
+        var message =
+         $"Parameter '{name}' requires a value of type '{expectedType}' but was given a value of type '{actualType}'";
+        Report(span, message);
     }
 }

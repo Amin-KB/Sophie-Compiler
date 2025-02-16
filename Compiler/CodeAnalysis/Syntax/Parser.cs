@@ -34,6 +34,13 @@ internal sealed class Parser
         _errorDiagnostics.AddRange(lexer.ErrorDiagnostics);
     }
 
+    public CompilationUnitSyntax ParseCompilationUnit()
+    {
+        var statement = ParseStatement();
+        var endOfFileToken = MatchToken(SyntaxKind.EndOfFileToken);
+        return new CompilationUnitSyntax(statement, endOfFileToken);
+    }
+
     private SyntaxToken Peek(int offset)
     {
         var index = _position + offset;
@@ -108,12 +115,7 @@ internal sealed class Parser
     }
 
 
-    public CompilationUnitSyntax ParseCompilationUnit()
-    {
-        var statement = ParseStatement();
-        var endOfFileToken = MatchToken(SyntaxKind.EndOfFileToken);
-        return new CompilationUnitSyntax(statement, endOfFileToken);
-    }
+ 
 
     private StatementSyntax ParseStatement()
     {
@@ -211,8 +213,44 @@ internal sealed class Parser
                 return ParseStringLiteral();
             case SyntaxKind.IdentifierToken:
             default:
-                return ParseNameToken();
+                return ParseNameOrCallExpression();
         }
+    }
+
+    private ExpressionSyntax ParseNameOrCallExpression()
+    {
+        if (Peek(0).SyntaxKind == SyntaxKind.IdentifierToken && Peek(1).SyntaxKind == SyntaxKind.OpenParenthesisToken)
+            return ParseCallExpression();
+        return ParseNameExpression();
+    }
+
+    private ExpressionSyntax ParseCallExpression()
+    {
+        var identifier=MatchToken(SyntaxKind.IdentifierToken);
+        var openParenthesisToken=MatchToken(SyntaxKind.OpenParenthesisToken);
+        var arguments=ParseArguments();
+        var closeParenthesisToken = MatchToken(SyntaxKind.CloseParenthesisToken);
+        return new CallExpressionSyntax(identifier,openParenthesisToken,arguments,closeParenthesisToken);
+    }
+
+    private SeparatedSyntaxList<ExpressionSyntax> ParseArguments()
+    {
+      var nodesAnsSeparators=ImmutableArray.CreateBuilder<SyntaxNode>();
+
+        while (Current.SyntaxKind !=SyntaxKind.CloseParenthesisToken &&
+            Current.SyntaxKind != SyntaxKind.EndOfFileToken)
+        {
+            var expression=ParseExpression();
+            nodesAnsSeparators.Add(expression);
+
+            if(Current.SyntaxKind != SyntaxKind.CloseParenthesisToken)
+            {
+                var comma = MatchToken(SyntaxKind.CommaToken);
+                nodesAnsSeparators.Add(comma);
+            }
+        }
+
+        return new SeparatedSyntaxList<ExpressionSyntax>(nodesAnsSeparators.ToImmutable());
     }
 
     private ExpressionSyntax ParseNumberLiteral()
@@ -258,7 +296,7 @@ internal sealed class Parser
         return new LiteralExpressionSyntax(keywordToken, isTrue);
     }
 
-    private ExpressionSyntax ParseNameToken()
+    private ExpressionSyntax ParseNameExpression()
     {
         var identifierToken = MatchToken(SyntaxKind.IdentifierToken);
         return new NameExpressionSyntax(identifierToken);

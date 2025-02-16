@@ -1,5 +1,4 @@
 ﻿namespace Compiler.CodeAnalysis.Syntax;
-
 public class AssignmentExpressionSyntax : ExpressionSyntax
 {
  

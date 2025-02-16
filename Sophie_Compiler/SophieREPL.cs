@@ -42,41 +42,39 @@ internal sealed class SophieREPL : REPL
             : _previous.ContinueWith(syntaxTree);
 
 
-        var result = compilation.Evaluate(_variables);
+
 
         if (_showTree)
-        {
-            Console.ForegroundColor = ConsoleColor.DarkGray;
             syntaxTree.Root.WriteTo(Console.Out);
-            Console.ResetColor();
-        }
 
         if (_showProgram)
-        {
-            Console.ForegroundColor = ConsoleColor.DarkGray;
             compilation.EmitTree(Console.Out);
-            Console.ResetColor();
-        }
+
+        var result = compilation.Evaluate(_variables);
 
         if (!result.Diagnostics.Any())
         {
-            Console.ForegroundColor = ConsoleColor.DarkMagenta;
-            Console.WriteLine(result.Value);
-            Console.ResetColor();
-
+            if (result.Value != null)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                Console.WriteLine(result.Value);
+                Console.ResetColor();
+            }
             _previous = compilation;
         }
         else
         {
-            var text = syntaxTree.Text;
+
             foreach (var diagnostic in result.Diagnostics)
             {
-                var lineIndex = text.GetLineIndex(diagnostic.TextSpan.Start);
-                var line = text.Lines[lineIndex];
+                var lineIndex = syntaxTree.Text.GetLineIndex(diagnostic.TextSpan.Start);
+                var line = syntaxTree.Text.Lines[lineIndex];
                 var lineNumber = lineIndex + 1;
 
                 var character = diagnostic.TextSpan.Start - line.Start + 1;
+
                 Console.WriteLine();
+
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.Write($"({lineNumber},{character}): ");
                 Console.WriteLine(diagnostic);
@@ -109,6 +107,7 @@ internal sealed class SophieREPL : REPL
         {
             var isKeyword = token.SyntaxKind.ToString().EndsWith("Keyword");
             var isNumber = token.SyntaxKind == SyntaxKind.NumberToken;
+            var isString = token.SyntaxKind == SyntaxKind.StringToken;
             var isIdentifier = token.SyntaxKind == SyntaxKind.IdentifierToken;
             if (isKeyword)
                 Console.ForegroundColor = ConsoleColor.Blue;
@@ -116,6 +115,8 @@ internal sealed class SophieREPL : REPL
                 Console.ForegroundColor = ConsoleColor.DarkMagenta;
             else if (isNumber)
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
+            else if (isString)
+                Console.ForegroundColor = ConsoleColor.DarkGreen;
             else
                 Console.ForegroundColor = ConsoleColor.DarkGray;
 

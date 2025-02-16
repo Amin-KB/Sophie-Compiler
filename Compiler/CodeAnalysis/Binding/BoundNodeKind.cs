@@ -22,4 +22,5 @@ public enum BoundNodeKind
     //Declarations
     VariableDeclaration,
     ErrorExpression,
+    CallExpression,
 }

@@ -92,6 +92,8 @@ public static class SyntaxFact
                 return ")";
             case SyntaxKind.OpenBraceToken:
                 return "{";
+            case SyntaxKind.CommaToken:
+                return ",";
             case SyntaxKind.CloseBraceToken:
                 return "}";
             case SyntaxKind.IfKeyword:
