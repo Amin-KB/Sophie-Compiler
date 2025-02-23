@@ -40,7 +40,7 @@ internal sealed class Binder
             previous = previous.Previous;
         }
 
-        BoundScope parent = null;
+        var parent = CreateRootScope();
         while (stack.Count > 0)
         {
             previous = stack.Pop();
@@ -51,6 +51,17 @@ internal sealed class Binder
         }
 
         return parent;
+    }
+
+    private static  BoundScope CreateRootScope()
+    {
+        var result= new BoundScope(null);
+
+        foreach (var function in BuiltinFunctions.GetAll())
+            result.TryDeclareFunction(function);
+        
+        return result;
+        
     }
 
     private BoundStatement BindStatement(StatementSyntax syntax)
@@ -179,10 +190,8 @@ internal sealed class Binder
             var boundArgument = BindExpression(argument);
             boundArguments.Add(boundArgument);
         }
-        var functions = BuiltinFunctions.GetAll();
-
-        var function = functions.SingleOrDefault(f => f.Name == syntax.Identifier.Text);
-        if(function == null)
+  
+        if(_scope.TryLookupFunction(syntax.Identifier.Text, out var function))
         {
             _diagnostics.ReportUndefinedFunction(syntax.Identifier.Span, syntax.Identifier.Text);
             return new BoundErrorExpression();
