@@ -7,6 +7,7 @@ internal sealed class Evaluator
 {
     private readonly BoundBlockStatement _root;
     private readonly Dictionary<VariableSymbol, object> _variables;
+    private Random _random;
     private object _lastValue;
 
     public Evaluator(BoundBlockStatement root, Dictionary<VariableSymbol, object> variables)
@@ -109,6 +110,18 @@ internal sealed class Evaluator
             var message = (string)EvaluateExpression(node.Arguments[0]);
             Console.WriteLine(message);
             return null;
+        }
+        else if (node.Function == BuiltinFunctions.Rnd)
+        {
+            var max = (int)EvaluateExpression(node.Arguments[0]);
+            if (_random == null)
+                _random = new Random();
+            return _random.Next(max);
+        }
+        else if (node.Function == BuiltinFunctions.IntConvert)
+        {
+            var input = (string)EvaluateExpression(node.Arguments[0]);
+            return Convert.ToInt32(input);
         }
         else
         {

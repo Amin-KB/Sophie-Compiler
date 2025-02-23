@@ -191,7 +191,7 @@ internal sealed class Binder
             boundArguments.Add(boundArgument);
         }
   
-        if(_scope.TryLookupFunction(syntax.Identifier.Text, out var function))
+        if(!_scope.TryLookupFunction(syntax.Identifier.Text, out var function))
         {
             _diagnostics.ReportUndefinedFunction(syntax.Identifier.Span, syntax.Identifier.Text);
             return new BoundErrorExpression();
