@@ -108,7 +108,7 @@ internal sealed class Binder
 
     private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)
     {
-        var expression = BindExpression(syntax.Expression);
+        var expression = BindExpression(syntax.Expression,canBeVoid:true);
         return new BoundExpressionStatement(expression);
     }
 
@@ -125,7 +125,17 @@ internal sealed class Binder
         _scope = _scope.Parent;
         return new BoundBlockStatement(statements.ToImmutable());
     }
-
+ 
+    private BoundExpression BindExpression(ExpressionSyntax syntax, bool canBeVoid=false)
+    {
+        var result= BindExpressionInternal(syntax);
+        if (!canBeVoid && result.Type == TypeSymbol.Void)
+        {
+            _diagnostics.ReportExpressionMustHaveValue(syntax.Span);
+            return new BoundErrorExpression();
+        }
+        return result;
+    }
     private BoundExpression BindExpression(ExpressionSyntax syntax, TypeSymbol targetType)
     {
         var result = BindExpression(syntax);
@@ -136,7 +146,7 @@ internal sealed class Binder
         return result;
     }
 
-    public BoundExpression BindExpression(ExpressionSyntax syntax)
+    public BoundExpression BindExpressionInternal(ExpressionSyntax syntax)
     {
         switch (syntax.SyntaxKind)
         {

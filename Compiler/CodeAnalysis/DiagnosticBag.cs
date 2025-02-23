@@ -116,4 +116,11 @@ internal sealed class DiagnosticBag : IEnumerable<Diagnostic>
          $"Parameter '{name}' requires a value of type '{expectedType}' but was given a value of type '{actualType}'";
         Report(span, message);
     }
+
+    public void ReportExpressionMustHaveValue(TextSpan span)
+    {
+        var message =
+            $"Expression must have a value";
+        Report(span, message);
+    }
 }
