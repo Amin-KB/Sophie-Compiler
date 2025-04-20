@@ -32,6 +32,7 @@ public enum SyntaxKind
     HatToken,
     StringToken,
     CommaToken,
+    ColonToken,
     //Expressions
     LiteralExpression,
     BinaryExpression,
@@ -64,6 +65,7 @@ public enum SyntaxKind
     ForStatement,
     //Declarations
     VariableDeclaration,
-  
-   
+
+
+    TypeClause
 }

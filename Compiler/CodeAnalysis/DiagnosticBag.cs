@@ -74,7 +74,12 @@ internal sealed class DiagnosticBag : IEnumerable<Diagnostic>
             $"cannot convert type  '{fromType}' to '{toType}'.";
         Report(span,message);
     }
-
+    public void ReportCannotConvertImplicitly(TextSpan span, TypeSymbol fromType, TypeSymbol toType)
+    {
+        var message =
+            $"cannot convert type '{fromType}' to '{toType}'. An explicit conversion exists (are you missing a cast?)";
+        Report(span,message);
+    }
     public void ReportVariableAlreadyDeclared(TextSpan span, string name)
     {
         var message =
@@ -123,4 +128,13 @@ internal sealed class DiagnosticBag : IEnumerable<Diagnostic>
             $"Expression must have a value";
         Report(span, message);
     }
+
+    public void ReportUndefinedType(TextSpan span, string name)
+    {
+        var message =
+            $"Type '{name}' does not exist.";
+        Report(span, message);
+    }
+
+  
 }
